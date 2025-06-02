@@ -22,7 +22,7 @@ import com.example.cardiotrack.screens.doctor.dashboard.DoctorDashboardScreen
 import com.example.cardiotrack.screens.doctor.dashboard.DoctorDashboardScreenViewModel
 import com.example.cardiotrack.screens.patient.dashboard.PatientDashboardScreen
 import com.example.cardiotrack.services.auth.FirebaseAuthService
-import com.example.cardiotrack.services.auth.FirebaseDoctorService
+import com.example.cardiotrack.services.doctor.FirebaseDoctorService
 import com.example.cardiotrack.ui.theme.CardioTrackTheme
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

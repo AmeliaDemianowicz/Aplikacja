@@ -1,5 +1,6 @@
 package com.example.cardiotrack.services.auth
 
+import com.example.cardiotrack.database.FirebaseUser
 import com.example.cardiotrack.domain.User
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -8,17 +9,6 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
-
-enum class FirebaseUserType {
-    DOCTOR,
-    PATIENT
-}
-
-data class FirebaseUser(
-    val type: FirebaseUserType? = null,
-    val firstName: String? = null,
-    val lastName: String? = null
-)
 
 class FirebaseAuthService : AuthService {
     private val users = Firebase.firestore.collection("users")
@@ -55,41 +45,10 @@ class FirebaseAuthService : AuthService {
 
     private suspend fun getUserById(userId: String): User {
         val userData = users.document(userId).get().await().toObject<FirebaseUser>()
-        return userData?.let { deserializeUser(userId, it) } ?: throw AuthError.Unexpected
+        return userData?.let { FirebaseUser.deserialize(it) } ?: throw AuthError.Unexpected
     }
 
     private suspend fun setUserById(userId: String, user: User) {
-        users.document(userId).set(serializeUser(user)).await()
+        users.document(userId).set(FirebaseUser.serialize(user)).await()
     }
-
-    private fun deserializeUser(userId: String, user: FirebaseUser): User {
-        return when (user.type) {
-            FirebaseUserType.DOCTOR -> User.Doctor(userId)
-            FirebaseUserType.PATIENT -> deserializePatient(userId, user)
-            null -> throw AuthError.Unexpected
-        }
-    }
-
-    private fun deserializePatient(userId: String, user: FirebaseUser): User.Patient {
-        if (user.firstName == null || user.lastName == null) {
-            throw AuthError.Unexpected
-        }
-
-        return User.Patient(userId, firstName = user.firstName, lastName = user.lastName)
-    }
-
-    private fun serializeUser(user: User): FirebaseUser {
-        return when (user) {
-            is User.Doctor -> FirebaseUser(
-                type = FirebaseUserType.DOCTOR,
-            )
-
-            is User.Patient -> FirebaseUser(
-                type = FirebaseUserType.PATIENT,
-                firstName = user.firstName,
-                lastName = user.lastName
-            )
-        }
-    }
-
 }
