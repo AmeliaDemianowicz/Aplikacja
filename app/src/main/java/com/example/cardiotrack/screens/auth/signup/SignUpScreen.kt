@@ -18,9 +18,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.serialization.Serializable
+import com.example.cardiotrack.R
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.shape.RoundedCornerShape
+//import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.graphics.Color
 
 @Serializable
 data object SignUpScreen
@@ -36,6 +46,14 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
             .fillMaxSize()
             .padding(30.dp)
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "Logo",
+            modifier = Modifier
+                .fillMaxWidth(0.7f)
+                .padding(bottom = 24.dp),
+            contentScale = ContentScale.Fit
+        )
         OutlinedTextField(
             label = { Text("E-mail") },
             value = state.email,
@@ -45,6 +63,7 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
             supportingText = state.emailError?.let { { Text(it) } },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp),
         )
         OutlinedTextField(
             label = { Text("Hasło") },
@@ -113,3 +132,13 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
         }
     }
 }
+//@Composable
+//fun TwojEktran() {
+    // tutaj piszesz jak wyglada twoj ekran
+//}
+
+//@Preview
+//@Composable
+//fun PreviewTwojegoEkranu() {
+    //TwojEktran()
+//}
