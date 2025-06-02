@@ -4,6 +4,7 @@ import android.util.Patterns.EMAIL_ADDRESS
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.domain.User
 import com.example.cardiotrack.screens.auth.signin.SignInScreen
 import com.example.cardiotrack.screens.doctor.dashboard.DoctorDashboardScreen
@@ -14,6 +15,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 
 class SignUpScreenViewModel(
     private val authService: AuthService,
@@ -41,23 +43,38 @@ class SignUpScreenViewModel(
         state.update { it.copy(lastName = lastName, lastNameError = null) }
     }
 
+    fun handleBirthDateChange(birthDate: LocalDate) {
+        state.update { it.copy(birthDate = birthDate, birthDateError = null) }
+    }
+
+    fun handleSexChange(sex: Sex) {
+        state.update { it.copy(sex = sex, sexError = null) }
+    }
+
     fun handleSignUp() {
         viewModelScope.launch(CoroutineExceptionHandler { _, error -> handleError(error) }) {
             state.update { it.copy(emailError = null, passwordError = null) }
             validateForm()
+            val userData = state.value
             if (
-                state.value.emailError == null &&
-                state.value.passwordError == null &&
-                state.value.passwordRepeatError == null &&
-                state.value.firstNameError == null &&
-                state.value.lastNameError == null
+                userData.emailError == null &&
+                userData.passwordError == null &&
+                userData.passwordRepeatError == null &&
+                userData.firstNameError == null &&
+                userData.lastNameError == null &&
+                userData.sex != null &&
+                userData.sexError == null &&
+                userData.birthDate != null &&
+                userData.birthDateError == null
             ) {
                 state.update { it.copy(loading = true) }
                 val user = authService.signUp(
-                    email = state.value.email,
-                    password = state.value.password,
-                    firstName = state.value.firstName,
-                    lastName = state.value.lastName
+                    email = userData.email,
+                    password = userData.password,
+                    firstName = userData.firstName,
+                    lastName = userData.lastName,
+                    sex = userData.sex,
+                    birthDate = userData.birthDate
                 )
                 state.update { it.copy(loading = false) }
                 redirectToNextScreen(user)
@@ -78,6 +95,8 @@ class SignUpScreenViewModel(
         validatePasswordRepeatField()
         validateFirstNameField()
         validateLastNameField()
+        validateBirthDateField()
+        validateSexField()
     }
 
     private fun validateEmailField() {
@@ -113,6 +132,18 @@ class SignUpScreenViewModel(
     private fun validateLastNameField() {
         if (state.value.lastName.isBlank()) {
             return state.update { it.copy(lastNameError = "Nazwisko nie może być puste") }
+        }
+    }
+
+    private fun validateBirthDateField() {
+        if (state.value.birthDate == null) {
+            return state.update { it.copy(birthDateError = "Data urodzenia nie może być pusta") }
+        }
+    }
+
+    private fun validateSexField() {
+        if (state.value.sex == null) {
+            return state.update { it.copy(sexError = "Płeć nie może być pusta") }
         }
     }
 

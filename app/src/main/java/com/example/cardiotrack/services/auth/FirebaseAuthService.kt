@@ -1,6 +1,7 @@
 package com.example.cardiotrack.services.auth
 
 import com.example.cardiotrack.database.FirebaseUser
+import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.domain.User
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -9,6 +10,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
+import kotlinx.datetime.LocalDate
 
 class FirebaseAuthService : AuthService {
     private val users = Firebase.firestore.collection("users")
@@ -32,12 +34,14 @@ class FirebaseAuthService : AuthService {
         email: String,
         password: String,
         firstName: String,
-        lastName: String
+        lastName: String,
+        birthDate: LocalDate,
+        sex: Sex,
     ): User {
         try {
             val result = Firebase.auth.createUserWithEmailAndPassword(email, password).await()
             val userId = result.user?.uid ?: throw AuthError.Unexpected
-            return User.Patient(userId, firstName, lastName).also { setUserById(userId, it) }
+            return User.Patient(userId, firstName, lastName, birthDate, sex).also { setUserById(userId, it) }
         } catch (_: FirebaseAuthUserCollisionException) {
             throw AuthError.UserAlreadyExists
         }

@@ -1,6 +1,8 @@
 package com.example.cardiotrack.database
 
+import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.domain.User
+import kotlinx.datetime.LocalDate
 
 enum class FirebaseUserType {
     DOCTOR,
@@ -12,7 +14,9 @@ data class FirebaseUser(
     val type: FirebaseUserType? = null,
     val firstName: String? = null,
     val lastName: String? = null,
-    val fullName: String? = null
+    val fullName: String? = null,
+    val birthDate: LocalDate? = null,
+    val sex: Sex? = null,
 ) {
     companion object {
         fun deserialize(user: FirebaseUser): User {
@@ -39,7 +43,16 @@ data class FirebaseUser(
             checkNotNull(user.id)
             checkNotNull(user.firstName)
             checkNotNull(user.lastName)
-            return User.Patient(id = user.id, firstName = user.firstName, lastName = user.lastName)
+            // TODO: uncomment checks
+            // checkNotNull(user.birthDate)
+            // checkNotNull(user.sex)
+            return User.Patient(
+                id = user.id,
+                firstName = user.firstName,
+                lastName = user.lastName,
+                birthDate = user.birthDate,
+                sex = user.sex,
+            )
         }
 
         fun serializeDoctor(user: User.Doctor): FirebaseUser {
