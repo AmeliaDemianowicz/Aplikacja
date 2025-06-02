@@ -73,17 +73,46 @@ class SignUpScreenViewModel(
     }
 
     private fun validateForm() {
-        if (!EMAIL_ADDRESS.matcher(state.value.email).matches()) {
-            state.update { it.copy(emailError = "Nieprawidłowy e-mail") }
-        }
+        validateEmailField()
+        validatePasswordField()
+        validatePasswordRepeatField()
+        validateFirstNameField()
+        validateLastNameField()
+    }
+
+    private fun validateEmailField() {
         if (state.value.email.isBlank()) {
-            state.update { it.copy(emailError = "E-mail nie może być pusty") }
+            return state.update { it.copy(emailError = "E-mail nie może być pusty") }
+        }
+        if (!EMAIL_ADDRESS.matcher(state.value.email).matches()) {
+            return state.update { it.copy(emailError = "Nieprawidłowy e-mail") }
+        }
+    }
+
+    private fun validatePasswordField() {
+        if (state.value.password.isBlank()) {
+            return state.update { it.copy(passwordError = "Hasło nie może być puste") }
         }
         if (state.value.password.length < 8) {
-            state.update { it.copy(passwordError = "Hasło musi mieć co najmniej 8 znaków") }
+            return state.update { it.copy(passwordError = "Hasło musi mieć co najmniej 8 znaków") }
         }
-        if (state.value.password.isBlank()) {
-            state.update { it.copy(passwordError = "Hasło nie może być puste") }
+    }
+
+    private fun validatePasswordRepeatField() {
+        if (state.value.passwordRepeat != state.value.password) {
+            return state.update { it.copy(passwordRepeatError = "Hasła nie są takie same") }
+        }
+    }
+
+    private fun validateFirstNameField() {
+        if (state.value.firstName.isBlank()) {
+            return state.update { it.copy(firstNameError = "Imie nie może być puste") }
+        }
+    }
+
+    private fun validateLastNameField() {
+        if (state.value.lastName.isBlank()) {
+            return state.update { it.copy(lastNameError = "Nazwisko nie może być puste") }
         }
     }
 

@@ -109,7 +109,7 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
             enabled = !state.loading,
             onClick = viewModel::handleSignIn
         ) {
-            Text("Masz już konto?")
+            Text("Zaloguj się")
         }
     }
 }
