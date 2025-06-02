@@ -21,8 +21,6 @@ import com.example.cardiotrack.screens.auth.signup.SignUpScreenViewModel
 import com.example.cardiotrack.screens.doctor.dashboard.DoctorDashboardScreen
 import com.example.cardiotrack.screens.doctor.dashboard.DoctorDashboardScreenViewModel
 import com.example.cardiotrack.screens.patient.dashboard.PatientDashboardScreen
-import com.example.cardiotrack.screens.splash.SplashScreen
-import com.example.cardiotrack.screens.splash.SplashScreenViewModel
 import com.example.cardiotrack.services.auth.FirebaseAuthService
 import com.example.cardiotrack.services.auth.FirebaseDoctorService
 import com.example.cardiotrack.ui.theme.CardioTrackTheme
@@ -44,14 +42,7 @@ fun CardioTrackApp() {
             jsonTypeMap<User.Patient>(),
         )
 
-        NavHost(navController, startDestination = SplashScreen) {
-            composable<SplashScreen>(typeMap) {
-                SplashScreen(
-                    viewModel = viewModel(factory = viewModelFactory {
-                        initializer { SplashScreenViewModel(authService, navController) }
-                    })
-                )
-            }
+        NavHost(navController, startDestination = SignInScreen) {
             composable<SignInScreen>(typeMap) {
                 SignInScreen(
                     viewModel = viewModel(factory = viewModelFactory {
