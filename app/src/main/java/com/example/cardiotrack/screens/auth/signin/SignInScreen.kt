@@ -29,14 +29,56 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.cardiotrack.R
+import android.app.DatePickerDialog
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.compose.rememberNavController
+import com.example.cardiotrack.screens.auth.signup.SignUpScreen
+import com.example.cardiotrack.screens.auth.signup.SignUpScreenViewModel
+import com.example.cardiotrack.services.auth.FirebaseAuthService
+import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 @Serializable
 data object SignInScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignInScreen(viewModel: SignInScreenViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    // Local states for new fields
+    val context = LocalContext.current
+    val calendar = remember { Calendar.getInstance() }
+    var birthDate by remember { mutableStateOf("") }
+    var selectedGender by remember { mutableStateOf("") }
+    var genderExpanded by remember { mutableStateOf(false) }
+
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, day ->
+            val formatted = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                .format(Calendar.getInstance().apply {
+                    set(year, month, day)
+                }.time)
+            birthDate = formatted
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -50,10 +92,10 @@ fun SignInScreen(viewModel: SignInScreenViewModel) {
             contentDescription = "Logo",
             modifier = Modifier
                 .fillMaxWidth(0.7f)
-
                 .padding(bottom = 32.dp),
             contentScale = ContentScale.Fit
         )
+
         OutlinedTextField(
             label = { Text("E-mail") },
             value = state.email,
@@ -65,6 +107,7 @@ fun SignInScreen(viewModel: SignInScreenViewModel) {
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(15.dp),
         )
+
         OutlinedTextField(
             label = { Text("Hasło") },
             value = state.password,
@@ -81,7 +124,66 @@ fun SignInScreen(viewModel: SignInScreenViewModel) {
                 )
             },
         )
+
+        // Data urodzenia
+        OutlinedTextField(
+            value = birthDate,
+            onValueChange = {},
+            label = { Text("Data urodzenia") },
+            readOnly = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+                .clickable { datePickerDialog.show() },
+            shape = RoundedCornerShape(15.dp),
+            enabled = !state.loading,
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = false)
+            }
+        )
+
+        // Płeć - dropdown
+        val genders = listOf("Kobieta", "Mężczyzna")
+        ExposedDropdownMenuBox(
+            expanded = genderExpanded,
+            onExpandedChange = { genderExpanded = !genderExpanded },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            OutlinedTextField(
+                value = selectedGender,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Płeć") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = genderExpanded)
+                },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(15.dp),
+                enabled = !state.loading,
+            )
+
+            DropdownMenu(
+                expanded = genderExpanded,
+                onDismissRequest = { genderExpanded = false }
+            ) {
+                genders.forEach { gender ->
+                    DropdownMenuItem(
+                        text = { Text(gender) },
+                        onClick = {
+                            selectedGender = gender
+                            genderExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.padding(20.dp))
+
         FilledTonalButton(
             modifier = Modifier.fillMaxWidth(),
             enabled = !state.loading,
@@ -89,6 +191,7 @@ fun SignInScreen(viewModel: SignInScreenViewModel) {
         ) {
             Text("Zaloguj się")
         }
+
         TextButton(
             modifier = Modifier.fillMaxWidth(),
             enabled = !state.loading,
@@ -97,4 +200,15 @@ fun SignInScreen(viewModel: SignInScreenViewModel) {
             Text("Zarejestruj się")
         }
     }
+
+}
+@Preview
+@Composable
+fun SignInScreenPreview() {
+    val navController = rememberNavController()
+    SignUpScreen(
+        viewModel = viewModel(factory = viewModelFactory {
+            initializer { SignUpScreenViewModel(FirebaseAuthService(), navController) }
+        })
+    )
 }
