@@ -52,6 +52,14 @@ class SignUpScreenViewModel(
         state.update { it.copy(sex = sex, sexError = null) }
     }
 
+    fun showSexDropdown() {
+        state.update { it.copy(showSexDropdown = true) }
+    }
+
+    fun changeShowSexDropdown(showSexDropdown: Boolean) {
+        state.update { it.copy(showSexDropdown = showSexDropdown) }
+    }
+
     fun showBirthDateModal() {
         state.update { it.copy(showBirthDateModal = true) }
     }

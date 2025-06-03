@@ -13,7 +13,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,12 +45,17 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.rememberNavController
 import com.example.cardiotrack.R
+import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.services.auth.FirebaseAuthService
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.Serializable
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+
+
+val SEX_OPTIONS = listOf(Sex.MAN, Sex.WOMAN)
+val SEX_LABELS = mapOf(Sex.MAN to "Mężczyzna", Sex.WOMAN to "Kobieta")
 
 @Serializable
 data object SignUpScreen
@@ -182,6 +189,37 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
                 }
             ) {
                 DatePicker(state = datePickerState)
+            }
+        }
+        ExposedDropdownMenuBox(
+            expanded = state.showSexDropdown,
+            onExpandedChange = viewModel::changeShowSexDropdown
+        ) {
+            OutlinedTextField(
+                value = state.sex?.let { SEX_LABELS[it] } ?: "",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Płeć") },
+                isError = state.sexError != null,
+                supportingText = state.sexError?.let { { Text(it) } },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
+
+            ExposedDropdownMenu(
+                expanded = state.showSexDropdown,
+                onDismissRequest = { viewModel.changeShowSexDropdown(false) }
+            ) {
+                SEX_OPTIONS.forEach { sex ->
+                    DropdownMenuItem(
+                        text = { Text(SEX_LABELS[sex] ?: sex.name) },
+                        onClick = {
+                            viewModel.handleSexChange(sex)
+                            viewModel.changeShowSexDropdown(false)
+                        }
+                    )
+                }
             }
         }
         Spacer(modifier = Modifier.padding(20.dp))

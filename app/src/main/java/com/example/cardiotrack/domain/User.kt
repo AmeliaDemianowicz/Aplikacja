@@ -13,9 +13,8 @@ sealed class User {
         val id: String,
         val firstName: String,
         val lastName: String,
-        // TODO: change to non-null
-        val birthDate: Instant?,
-        val sex: Sex?,
+        val birthDate: Instant,
+        val sex: Sex,
     ) : User()
 }
 

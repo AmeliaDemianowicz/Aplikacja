@@ -16,6 +16,7 @@ data class SignUpScreenState(
     val lastNameError: String? = null,
     val sex: Sex? = null,
     val sexError: String? = null,
+    val showSexDropdown: Boolean = false,
     val birthDate: Instant? = null,
     val birthDateError: String? = null,
     val showBirthDateModal: Boolean = false,

@@ -43,9 +43,8 @@ data class FirebaseUser(
             checkNotNull(user.id)
             checkNotNull(user.firstName)
             checkNotNull(user.lastName)
-             checkNotNull(user.birthDate)
-            // TODO: uncomment checks
-            // checkNotNull(user.sex)
+            checkNotNull(user.birthDate)
+            checkNotNull(user.sex)
             return User.Patient(
                 id = user.id,
                 firstName = user.firstName,
