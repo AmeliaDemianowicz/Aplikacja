@@ -9,15 +9,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
@@ -31,14 +44,22 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.rememberNavController
 import com.example.cardiotrack.R
 import com.example.cardiotrack.services.auth.FirebaseAuthService
+import kotlinx.datetime.Instant
+import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.Serializable
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Serializable
 data object SignUpScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(viewModel: SignUpScreenViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val datePickerState = rememberDatePickerState()
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -116,6 +137,53 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
+        OutlinedTextField(
+            value = state.birthDate?.let {
+                DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                    .format(it.toJavaInstant().atZone(ZoneId.systemDefault()))
+            } ?: "",
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Data urodzenia") },
+            isError = state.birthDateError != null,
+            supportingText = state.birthDateError?.let { { Text(it) } },
+            trailingIcon = {
+                IconButton(onClick = viewModel::showBirthDateModal) {
+                    Icon(Icons.Default.DateRange, contentDescription = "Pick Date")
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
+                .onFocusChanged {
+                    if (it.isFocused && !state.showBirthDateModal) {
+                        viewModel.showBirthDateModal()
+                    }
+                }
+
+        )
+        if (state.showBirthDateModal) {
+            DatePickerDialog(
+                onDismissRequest = {
+                    focusManager.clearFocus()
+                    viewModel.hideBirthDateModal()
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        focusManager.clearFocus()
+                        viewModel.handleBirthDateChange(
+                            Instant.fromEpochMilliseconds(
+                                datePickerState.selectedDateMillis ?: 0L
+                            )
+                        )
+                    }) {
+                        Text("Potwierdź")
+                    }
+                }
+            ) {
+                DatePicker(state = datePickerState)
+            }
+        }
         Spacer(modifier = Modifier.padding(20.dp))
         FilledTonalButton(
             modifier = Modifier.fillMaxWidth(),

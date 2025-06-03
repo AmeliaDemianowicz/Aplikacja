@@ -15,7 +15,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 
 class SignUpScreenViewModel(
     private val authService: AuthService,
@@ -43,12 +43,21 @@ class SignUpScreenViewModel(
         state.update { it.copy(lastName = lastName, lastNameError = null) }
     }
 
-    fun handleBirthDateChange(birthDate: LocalDate) {
+    fun handleBirthDateChange(birthDate: Instant) {
         state.update { it.copy(birthDate = birthDate, birthDateError = null) }
+        hideBirthDateModal()
     }
 
     fun handleSexChange(sex: Sex) {
         state.update { it.copy(sex = sex, sexError = null) }
+    }
+
+    fun showBirthDateModal() {
+        state.update { it.copy(showBirthDateModal = true) }
+    }
+
+    fun hideBirthDateModal() {
+        state.update { it.copy(showBirthDateModal = false) }
     }
 
     fun handleSignUp() {

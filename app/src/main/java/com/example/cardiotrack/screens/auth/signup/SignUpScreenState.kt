@@ -1,7 +1,7 @@
 package com.example.cardiotrack.screens.auth.signup
 
 import com.example.cardiotrack.domain.Sex
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 
 data class SignUpScreenState(
     val email: String = "",
@@ -16,7 +16,8 @@ data class SignUpScreenState(
     val lastNameError: String? = null,
     val sex: Sex? = null,
     val sexError: String? = null,
-    val birthDate: LocalDate? = null,
+    val birthDate: Instant? = null,
     val birthDateError: String? = null,
+    val showBirthDateModal: Boolean = false,
     val loading: Boolean = false,
 )

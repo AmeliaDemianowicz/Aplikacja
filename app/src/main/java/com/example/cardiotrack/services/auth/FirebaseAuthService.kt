@@ -10,6 +10,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 
 class FirebaseAuthService : AuthService {
@@ -35,7 +36,7 @@ class FirebaseAuthService : AuthService {
         password: String,
         firstName: String,
         lastName: String,
-        birthDate: LocalDate,
+        birthDate: Instant,
         sex: Sex,
     ): User {
         try {

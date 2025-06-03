@@ -1,6 +1,6 @@
 package com.example.cardiotrack.domain
 
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,7 +14,7 @@ sealed class User {
         val firstName: String,
         val lastName: String,
         // TODO: change to non-null
-        val birthDate: LocalDate?,
+        val birthDate: Instant?,
         val sex: Sex?,
     ) : User()
 }

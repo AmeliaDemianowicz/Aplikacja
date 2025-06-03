@@ -2,7 +2,7 @@ package com.example.cardiotrack.database
 
 import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.domain.User
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 
 enum class FirebaseUserType {
     DOCTOR,
@@ -15,7 +15,7 @@ data class FirebaseUser(
     val firstName: String? = null,
     val lastName: String? = null,
     val fullName: String? = null,
-    val birthDate: LocalDate? = null,
+    val birthDate: Long? = null,
     val sex: Sex? = null,
 ) {
     companion object {
@@ -43,14 +43,14 @@ data class FirebaseUser(
             checkNotNull(user.id)
             checkNotNull(user.firstName)
             checkNotNull(user.lastName)
+             checkNotNull(user.birthDate)
             // TODO: uncomment checks
-            // checkNotNull(user.birthDate)
             // checkNotNull(user.sex)
             return User.Patient(
                 id = user.id,
                 firstName = user.firstName,
                 lastName = user.lastName,
-                birthDate = user.birthDate,
+                birthDate = Instant.fromEpochMilliseconds(user.birthDate),
                 sex = user.sex,
             )
         }

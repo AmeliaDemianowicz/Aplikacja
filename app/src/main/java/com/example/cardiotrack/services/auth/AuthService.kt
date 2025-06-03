@@ -2,7 +2,7 @@ package com.example.cardiotrack.services.auth
 
 import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.domain.User
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 
 sealed class AuthError : Throwable() {
     data object UserAlreadyExists : AuthError()
@@ -18,7 +18,7 @@ interface AuthService {
         password: String,
         firstName: String,
         lastName: String,
-        birthDate: LocalDate,
+        birthDate: Instant,
         sex: Sex,
     ): User
 }
