@@ -103,6 +103,7 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
             supportingText = state.passwordError?.let { { Text(it) } },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp),
             visualTransformation = {
                 TransformedText(
                     AnnotatedString("*".repeat(it.text.length)), OffsetMapping.Identity
@@ -118,6 +119,7 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
             supportingText = state.passwordRepeatError?.let { { Text(it) } },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp),
             visualTransformation = {
                 TransformedText(
                     AnnotatedString("*".repeat(it.text.length)), OffsetMapping.Identity
@@ -133,6 +135,7 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
             supportingText = state.firstNameError?.let { { Text(it) } },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp),
         )
         OutlinedTextField(
             label = { Text("Nazwisko") },
@@ -143,6 +146,7 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
             supportingText = state.lastNameError?.let { { Text(it) } },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp),
         )
         OutlinedTextField(
             value = state.birthDate?.let {
@@ -159,6 +163,7 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
                     Icon(Icons.Default.DateRange, contentDescription = "Pick Date")
                 }
             },
+            shape = RoundedCornerShape(15.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester)
@@ -202,6 +207,7 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
                 label = { Text("Płeć") },
                 isError = state.sexError != null,
                 supportingText = state.sexError?.let { { Text(it) } },
+                shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .menuAnchor()
                     .fillMaxWidth()
@@ -225,6 +231,7 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
         Spacer(modifier = Modifier.padding(20.dp))
         FilledTonalButton(
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp),
             enabled = !state.loading,
             onClick = viewModel::handleSignUp
         ) {
@@ -232,6 +239,7 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
         }
         TextButton(
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp),
             enabled = !state.loading,
             onClick = viewModel::handleSignIn
         ) {

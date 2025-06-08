@@ -55,7 +55,7 @@ data object SignInScreen
 fun SignInScreen(viewModel: SignInScreenViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    // Local states for new fields
+
     val context = LocalContext.current
     val calendar = remember { Calendar.getInstance() }
     var birthDate by remember { mutableStateOf("") }
@@ -121,62 +121,6 @@ fun SignInScreen(viewModel: SignInScreenViewModel) {
             },
         )
 
-        // Data urodzenia
-        OutlinedTextField(
-            value = birthDate,
-            onValueChange = {},
-            label = { Text("Data urodzenia") },
-            readOnly = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-                .clickable { datePickerDialog.show() },
-            shape = RoundedCornerShape(15.dp),
-            enabled = !state.loading,
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = false)
-            }
-        )
-
-        // Płeć - dropdown
-        val genders = listOf("Kobieta", "Mężczyzna")
-        ExposedDropdownMenuBox(
-            expanded = genderExpanded,
-            onExpandedChange = { genderExpanded = !genderExpanded },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            OutlinedTextField(
-                value = selectedGender,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Płeć") },
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = genderExpanded)
-                },
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(15.dp),
-                enabled = !state.loading,
-            )
-
-            DropdownMenu(
-                expanded = genderExpanded,
-                onDismissRequest = { genderExpanded = false }
-            ) {
-                genders.forEach { gender ->
-                    DropdownMenuItem(
-                        text = { Text(gender) },
-                        onClick = {
-                            selectedGender = gender
-                            genderExpanded = false
-                        }
-                    )
-                }
-            }
-        }
 
         Spacer(modifier = Modifier.padding(20.dp))
 
@@ -192,6 +136,7 @@ fun SignInScreen(viewModel: SignInScreenViewModel) {
             modifier = Modifier.fillMaxWidth(),
             enabled = !state.loading,
             onClick = viewModel::handleSignUp
+
         ) {
             Text("Zarejestruj się")
         }

@@ -4,13 +4,13 @@ import androidx.compose.ui.graphics.Color
 
 
 
-val Blue80 = Color(0xFFB3D9FF)        // Jasny błękit
-val BlueGrey80 = Color(0xFFA0BFD9)    // Błękitno-szary
-val LightBlue80 = Color(0xFFADD8E6)   // Lekki błękit
+val Blue80 = Color(0xFFB3DCFF)        // Jasny błękit
+val BlueGrey80 = Color(0xFF99CFF0)    // Błękitno-szary
+val LightBlue80 = Color(0xFF8ECFFF)   // Lekki błękit
 
-val Blue40 = Color(0xFF1565C0)        // Głęboki niebieski
-val BlueGrey40 = Color(0xFF5C6BC0)    // Szaroniebieski
-val LightBlue40 = Color(0xFF0288D1)   // Żywy jasny niebieski
+val Blue40 = Color(0xFF0F78C2)        // Głęboki niebieski
+val BlueGrey40 = Color(0xFF15638A)    // Szaroniebieski
+val LightBlue40 = Color(0xFF0B6DAC)   // Żywy jasny niebieski
 //val Purple80 = Color(0xFFD0BCFF)
 //val PurpleGrey80 = Color(0xFFCCC2DC)
 //val Pink80 = Color(0xFFEFB8C8)
