@@ -35,16 +35,16 @@ fun PatientStatisticsScreen(viewModel: PatientStatisticsScreenViewModel) {
             Text("Średnia wartość z 7 dni")
             if (weeklyAverage != null) {
                 Text("SYS: ${weeklyAverage.sys} mmHg")
-                Text("DIA: ${weeklyAverage.sys} mmHg")
-                Text("HR: ${weeklyAverage.sys} bpm")
+                Text("DIA: ${weeklyAverage.dia} mmHg")
+                Text("HR: ${weeklyAverage.bpm} bpm")
             } else {
                 Text("Brak danych")
             }
             Text("Średnia wartość z 30 dni")
             if (monthlyAverage != null) {
                 Text("SYS: ${monthlyAverage.sys} mmHg")
-                Text("DIA: ${monthlyAverage.sys} mmHg")
-                Text("HR: ${monthlyAverage.sys} bpm")
+                Text("DIA: ${monthlyAverage.dia} mmHg")
+                Text("HR: ${monthlyAverage.bpm} bpm")
             } else {
                 Text("Brak danych")
             }
