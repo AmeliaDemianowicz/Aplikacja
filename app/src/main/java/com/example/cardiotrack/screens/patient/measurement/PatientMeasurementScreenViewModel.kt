@@ -3,8 +3,10 @@ package com.example.cardiotrack.screens.patient.measurement
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.cardiotrack.domain.Measurement
 import com.example.cardiotrack.domain.User
+import com.example.cardiotrack.screens.patient.dashboard.PatientDashboardScreen
 import com.example.cardiotrack.services.patient.PatientService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -15,7 +17,10 @@ import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-class PatientMeasurementScreenViewModel(private val patientService: PatientService) : ViewModel() {
+class PatientMeasurementScreenViewModel(
+    private val patientService: PatientService,
+    private val navController: NavController
+) : ViewModel() {
     val state = MutableStateFlow(PatientMeasurementScreenState())
 
     fun handleBpmChange(bpm: String) {
@@ -90,6 +95,7 @@ class PatientMeasurementScreenViewModel(private val patientService: PatientServi
                         notes = measurementData.notes
                     )
                 )
+                navController.navigate(PatientDashboardScreen(user))
             }
         }
     }
@@ -127,7 +133,6 @@ class PatientMeasurementScreenViewModel(private val patientService: PatientServi
             return state.update { it.copy(bpm = "Nieprawidłowe ciśnienie") }
         }
     }
-
 
     private fun validateDateField() {
         if (state.value.date == null) {

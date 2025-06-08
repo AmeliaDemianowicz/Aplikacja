@@ -90,7 +90,7 @@ fun CardioTrackApp() {
                 PatientMeasurementScreen(
                     routeData = it.toRoute<PatientMeasurementScreen>(),
                     viewModel = viewModel(factory = viewModelFactory {
-                        initializer { PatientMeasurementScreenViewModel(patientService) }
+                        initializer { PatientMeasurementScreenViewModel(patientService, navController) }
                     })
                 )
             }

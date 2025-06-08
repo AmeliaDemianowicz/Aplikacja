@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.compose.rememberNavController
 import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.domain.User
 import com.example.cardiotrack.services.patient.FirebasePatientService
@@ -193,6 +194,7 @@ fun PatientMeasurementScreen(
 @Preview
 @Composable
 fun PatientMeasurementScreenPreview() {
+    val navController = rememberNavController()
     PatientMeasurementScreen(
         routeData = PatientMeasurementScreen(
             User.Patient(
@@ -204,7 +206,7 @@ fun PatientMeasurementScreenPreview() {
             )
         ),
         viewModel = viewModel(factory = viewModelFactory {
-            initializer { PatientMeasurementScreenViewModel(FirebasePatientService()) }
+            initializer { PatientMeasurementScreenViewModel(FirebasePatientService(), navController) }
         })
     )
 }
