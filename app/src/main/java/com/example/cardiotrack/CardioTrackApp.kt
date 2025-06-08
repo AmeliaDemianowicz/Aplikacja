@@ -21,8 +21,11 @@ import com.example.cardiotrack.screens.auth.signup.SignUpScreenViewModel
 import com.example.cardiotrack.screens.doctor.dashboard.DoctorDashboardScreen
 import com.example.cardiotrack.screens.doctor.dashboard.DoctorDashboardScreenViewModel
 import com.example.cardiotrack.screens.patient.dashboard.PatientDashboardScreen
+import com.example.cardiotrack.screens.patient.measurement.PatientMeasurementScreen
+import com.example.cardiotrack.screens.patient.measurement.PatientMeasurementScreenViewModel
 import com.example.cardiotrack.services.auth.FirebaseAuthService
 import com.example.cardiotrack.services.doctor.FirebaseDoctorService
+import com.example.cardiotrack.services.patient.FirebasePatientService
 import com.example.cardiotrack.ui.theme.CardioTrackTheme
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -68,6 +71,14 @@ fun CardioTrackApp() {
             composable<PatientDashboardScreen>(typeMap) {
                 PatientDashboardScreen(
                     routeData = it.toRoute<PatientDashboardScreen>()
+                )
+            }
+            composable<PatientMeasurementScreen>(typeMap) {
+                PatientMeasurementScreen(
+                    routeData = it.toRoute<PatientMeasurementScreen>(),
+                    viewModel = viewModel(factory = viewModelFactory {
+                        initializer { PatientMeasurementScreenViewModel(FirebasePatientService()) }
+                    })
                 )
             }
         }
