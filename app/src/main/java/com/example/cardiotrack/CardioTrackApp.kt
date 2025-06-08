@@ -24,6 +24,8 @@ import com.example.cardiotrack.screens.patient.dashboard.PatientDashboardScreen
 import com.example.cardiotrack.screens.patient.dashboard.PatientDashboardScreenViewModel
 import com.example.cardiotrack.screens.patient.measurement.PatientMeasurementScreen
 import com.example.cardiotrack.screens.patient.measurement.PatientMeasurementScreenViewModel
+import com.example.cardiotrack.screens.patient.statistics.PatientStatisticsScreen
+import com.example.cardiotrack.screens.patient.statistics.PatientStatisticsScreenViewModel
 import com.example.cardiotrack.services.auth.FirebaseAuthService
 import com.example.cardiotrack.services.doctor.FirebaseDoctorService
 import com.example.cardiotrack.services.patient.FirebasePatientService
@@ -89,6 +91,19 @@ fun CardioTrackApp() {
                     routeData = it.toRoute<PatientMeasurementScreen>(),
                     viewModel = viewModel(factory = viewModelFactory {
                         initializer { PatientMeasurementScreenViewModel(patientService) }
+                    })
+                )
+            }
+            composable<PatientStatisticsScreen>(typeMap) {
+                PatientStatisticsScreen(
+                    routeData = it.toRoute<PatientStatisticsScreen>(),
+                    viewModel = viewModel(factory = viewModelFactory {
+                        initializer {
+                            PatientStatisticsScreenViewModel(
+                                it.toRoute<PatientStatisticsScreen>(),
+                                patientService
+                            )
+                        }
                     })
                 )
             }

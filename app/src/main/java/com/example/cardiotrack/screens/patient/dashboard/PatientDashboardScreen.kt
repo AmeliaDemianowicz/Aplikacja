@@ -180,7 +180,8 @@ fun PatientDashboardScreenPreview() {
     )
 
     PatientDashboardScreen(
-        routeData = routeData, viewModel = viewModel(factory = viewModelFactory {
+        routeData = routeData,
+        viewModel = viewModel(factory = viewModelFactory {
             initializer {
                 PatientDashboardScreenViewModel(
                     routeData, FirebasePatientService(), navController
