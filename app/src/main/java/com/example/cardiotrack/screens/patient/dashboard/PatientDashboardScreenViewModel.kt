@@ -1,15 +1,25 @@
 package com.example.cardiotrack.screens.patient.dashboard
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.cardiotrack.domain.User
 import com.example.cardiotrack.screens.patient.measurement.PatientMeasurementScreen
+import com.example.cardiotrack.services.patient.PatientService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class PatientDashboardScreenViewModel(private val navController: NavController) : ViewModel() {
+class PatientDashboardScreenViewModel(
+    private val routeData: PatientDashboardScreen,
+    private val patientService: PatientService,
+    private val navController: NavController
+) : ViewModel() {
     val state = MutableStateFlow(PatientDashboardScreenState())
+
+    init {
+        loadMeasurements()
+    }
 
     fun handleGoToPrevMonth() {
         state.update {
@@ -41,7 +51,14 @@ class PatientDashboardScreenViewModel(private val navController: NavController) 
         state.update { it.copy(selectedDate = date) }
     }
 
-    fun addMeasurement(user: User.Patient) {
-        navController.navigate(PatientMeasurementScreen(user))
+    fun addMeasurement() {
+        navController.navigate(PatientMeasurementScreen(routeData.user))
+    }
+
+    fun loadMeasurements() {
+        viewModelScope.launch {
+            val measurements = patientService.getMeasurements(routeData.user)
+            state.update { it.copy(measurements = measurements) }
+        }
     }
 }

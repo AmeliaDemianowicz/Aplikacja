@@ -196,7 +196,7 @@ fun PatientMeasurementScreenPreview() {
     PatientMeasurementScreen(
         routeData = PatientMeasurementScreen(
             User.Patient(
-                id = "",
+                id = "TEST",
                 firstName = "",
                 lastName = "",
                 birthDate = Clock.System.now(),

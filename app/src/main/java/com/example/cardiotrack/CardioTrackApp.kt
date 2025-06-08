@@ -40,6 +40,7 @@ fun CardioTrackApp() {
         val navController = rememberNavController()
         val authService = remember { FirebaseAuthService() }
         val doctorService = remember { FirebaseDoctorService() }
+        val patientService = remember { FirebasePatientService() }
 
         val typeMap = mapOf(
             jsonTypeMap<User.Doctor>(),
@@ -73,7 +74,13 @@ fun CardioTrackApp() {
                 PatientDashboardScreen(
                     routeData = it.toRoute<PatientDashboardScreen>(),
                     viewModel = viewModel(factory = viewModelFactory {
-                        initializer { PatientDashboardScreenViewModel(navController) }
+                        initializer {
+                            PatientDashboardScreenViewModel(
+                                it.toRoute<PatientDashboardScreen>(),
+                                patientService,
+                                navController
+                            )
+                        }
                     })
                 )
             }
@@ -81,7 +88,7 @@ fun CardioTrackApp() {
                 PatientMeasurementScreen(
                     routeData = it.toRoute<PatientMeasurementScreen>(),
                     viewModel = viewModel(factory = viewModelFactory {
-                        initializer { PatientMeasurementScreenViewModel(FirebasePatientService()) }
+                        initializer { PatientMeasurementScreenViewModel(patientService) }
                     })
                 )
             }

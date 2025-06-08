@@ -40,7 +40,11 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.rememberNavController
 import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.domain.User
+import com.example.cardiotrack.services.patient.FirebasePatientService
 import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -48,8 +52,7 @@ data class PatientDashboardScreen(val user: User.Patient)
 
 @Composable
 fun PatientDashboardScreen(
-    routeData: PatientDashboardScreen,
-    viewModel: PatientDashboardScreenViewModel
+    routeData: PatientDashboardScreen, viewModel: PatientDashboardScreenViewModel
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -69,9 +72,7 @@ fun PatientDashboardScreen(
             Text(
                 text = "${
                     state.selectedMonth.month.name.lowercase().replaceFirstChar { it.uppercase() }
-                } ${state.selectedMonth.year}",
-                style = MaterialTheme.typography.titleLarge
-            )
+                } ${state.selectedMonth.year}", style = MaterialTheme.typography.titleLarge)
 
             IconButton(onClick = viewModel::handleGoToNextMonth) {
                 Icon(Icons.Default.ArrowForward, contentDescription = "Next month")
@@ -107,7 +108,9 @@ fun PatientDashboardScreen(
             items(daysInMonth) { index ->
                 val day = index + 1
                 val date = state.selectedMonth.atDay(day)
-                val hasEvent = true
+                val hasEvent = state.measurements.any {
+                    it.date.toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate() == date
+                }
                 val isSelected = date == state.selectedDate
 
                 Box(
@@ -118,8 +121,7 @@ fun PatientDashboardScreen(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }) {
                             viewModel.handleSelectedDateChange(date)
-                        }
-                ) {
+                        }) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Box(
                             modifier = Modifier
@@ -127,8 +129,7 @@ fun PatientDashboardScreen(
                                 .background(
                                     color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
                                     shape = CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
+                                ), contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = day.toString(),
@@ -155,7 +156,7 @@ fun PatientDashboardScreen(
         Spacer(Modifier.height(16.dp))
 
         FilledTonalButton(
-            onClick = { viewModel.addMeasurement(routeData.user) },
+            onClick = { viewModel.addMeasurement() },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Dodaj pomiar")
@@ -168,19 +169,23 @@ fun PatientDashboardScreen(
 @Composable
 fun PatientDashboardScreenPreview() {
     val navController = rememberNavController()
+    val routeData = PatientDashboardScreen(
+        User.Patient(
+            id = "TEST",
+            firstName = "",
+            lastName = "",
+            birthDate = Clock.System.now(),
+            sex = Sex.MAN
+        )
+    )
 
     PatientDashboardScreen(
-        routeData = PatientDashboardScreen(
-            User.Patient(
-                id = "",
-                firstName = "",
-                lastName = "",
-                birthDate = Clock.System.now(),
-                sex = Sex.MAN
-            )
-        ),
-        viewModel = viewModel(factory = viewModelFactory {
-            initializer { PatientDashboardScreenViewModel(navController) }
+        routeData = routeData, viewModel = viewModel(factory = viewModelFactory {
+            initializer {
+                PatientDashboardScreenViewModel(
+                    routeData, FirebasePatientService(), navController
+                )
+            }
         })
     )
 }
