@@ -47,6 +47,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
+import java.time.LocalDate
 
 @Serializable
 data class PatientDashboardScreen(val user: User.Patient)
@@ -114,12 +115,14 @@ fun PatientDashboardScreen(
                     it.date.toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate() == date
                 }
                 val isSelected = date == state.selectedDate
+                val enabled = date.isBefore(LocalDate.now().plusDays(1))
 
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .aspectRatio(1f)
                         .clickable(
+                            enabled = enabled,
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }) {
                             viewModel.handleSelectedDateChange(date)
@@ -135,7 +138,9 @@ fun PatientDashboardScreen(
                         ) {
                             Text(
                                 text = day.toString(),
-                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else Color.Unspecified,
+                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                                else if (!enabled) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                else Color.Unspecified,
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         }
