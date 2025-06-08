@@ -11,11 +11,10 @@ import com.example.cardiotrack.services.patient.PatientService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
 
 class PatientMeasurementScreenViewModel(
     private val patientService: PatientService,
@@ -41,27 +40,10 @@ class PatientMeasurementScreenViewModel(
         }
     }
 
-    fun handleDateChange(date: Instant) {
-        state.update { it.copy(date = date, dateError = null) }
-        hideDateModal()
-        showTimeModal()
-    }
-
-    fun showDateModal() {
-        state.update { it.copy(showDateModal = true) }
-    }
-
-    fun hideDateModal() {
-        state.update { it.copy(showDateModal = false) }
-    }
-
-    fun handleTimeChange(hour: Int, minute: Int) {
+    fun handleTimeChange(date: LocalDate, hour: Int, minute: Int) {
         state.update {
             it.copy(
-                date = it.date
-                    ?.toLocalDateTime(TimeZone.currentSystemDefault())
-                    ?.date?.atTime(hour, minute)
-                    ?.toInstant(TimeZone.currentSystemDefault()),
+                date = date.atTime(hour, minute).toInstant(TimeZone.currentSystemDefault()),
                 dateError = null
             )
         }

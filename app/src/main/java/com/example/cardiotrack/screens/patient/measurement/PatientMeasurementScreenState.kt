@@ -11,7 +11,6 @@ data class PatientMeasurementScreenState(
     val diaError: String? = null,
     val date: Instant? = null,
     val dateError: String? = null,
-    val showDateModal: Boolean = false,
     val showTimeModal: Boolean = false,
     val notes: String? = null,
     val loading: Boolean = false

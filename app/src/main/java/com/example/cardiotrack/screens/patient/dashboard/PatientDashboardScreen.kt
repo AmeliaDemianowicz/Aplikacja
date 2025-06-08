@@ -158,7 +158,7 @@ fun PatientDashboardScreen(
         Spacer(Modifier.height(16.dp))
 
         FilledTonalButton(
-            onClick = { viewModel.addMeasurement() },
+            onClick = viewModel::addMeasurement,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Dodaj pomiar")

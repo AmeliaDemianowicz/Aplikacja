@@ -9,6 +9,7 @@ import com.example.cardiotrack.services.patient.PatientService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.toKotlinLocalDate
 import java.time.LocalDate
 
 class PatientDashboardScreenViewModel(
@@ -53,7 +54,12 @@ class PatientDashboardScreenViewModel(
     }
 
     fun addMeasurement() {
-        navController.navigate(PatientMeasurementScreen(routeData.user))
+        navController.navigate(
+            PatientMeasurementScreen(
+                routeData.user,
+                state.value.selectedDate.toKotlinLocalDate().toString()
+            )
+        )
     }
 
     fun loadMeasurements() {
