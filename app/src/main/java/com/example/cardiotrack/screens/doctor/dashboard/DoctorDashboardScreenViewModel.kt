@@ -2,6 +2,9 @@ package com.example.cardiotrack.screens.doctor.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.example.cardiotrack.domain.User
+import com.example.cardiotrack.screens.patient.statistics.PatientStatisticsScreen
 import com.example.cardiotrack.services.doctor.DoctorService
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +13,10 @@ import kotlinx.coroutines.launch
 
 const val PAGE_SIZE = 25
 
-class DoctorDashboardScreenViewModel(private val doctorService: DoctorService) : ViewModel() {
+class DoctorDashboardScreenViewModel(
+    private val doctorService: DoctorService,
+    private val navController: NavController
+) : ViewModel() {
     val state = MutableStateFlow(DoctorDashboardScreenState())
 
     init {
@@ -52,6 +58,10 @@ class DoctorDashboardScreenViewModel(private val doctorService: DoctorService) :
                 )
             }
         }
+    }
+
+    fun redirectToStatistics(user: User.Patient) {
+        navController.navigate(PatientStatisticsScreen(user))
     }
 
     private fun handleError(error: Throwable) {

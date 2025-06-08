@@ -1,6 +1,7 @@
 package com.example.cardiotrack.screens.doctor.dashboard
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.compose.rememberNavController
 import com.example.cardiotrack.R
 import com.example.cardiotrack.domain.User
 import com.example.cardiotrack.services.doctor.FirebaseDoctorService
@@ -52,13 +55,13 @@ fun DoctorDashboardScreen(
 
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo }.collect { layoutInfo ->
-                val totalItems = layoutInfo.totalItemsCount
-                val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            val totalItems = layoutInfo.totalItemsCount
+            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
 
-                if (lastVisibleItem >= totalItems - PAGE_SIZE) {
-                    viewModel.loadNextPatientsPage()
-                }
+            if (lastVisibleItem >= totalItems - PAGE_SIZE) {
+                viewModel.loadNextPatientsPage()
             }
+        }
     }
 
     Column(
@@ -90,17 +93,22 @@ fun DoctorDashboardScreen(
             items(state.patients, key = { it.id }) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Profil pacjenta",
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    Text("${it.firstName} ${it.lastName}")
-                    Text("${it.birthDate} ${it.sex}")
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .clickable { viewModel.redirectToStatistics(it) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Profil pacjenta",
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Text("${it.firstName} ${it.lastName}")
+                        Text("${it.birthDate} ${it.sex}")
+                    }
                 }
             }
 
@@ -117,10 +125,11 @@ fun DoctorDashboardScreen(
 @Preview
 @Composable
 fun DoctorDashboardScreenPreview() {
+    val navController = rememberNavController()
     DoctorDashboardScreen(
         routeData = DoctorDashboardScreen(User.Doctor(id = "id")),
         viewModel = viewModel(factory = viewModelFactory {
-            initializer { DoctorDashboardScreenViewModel(FirebaseDoctorService()) }
+            initializer { DoctorDashboardScreenViewModel(FirebaseDoctorService(), navController) }
         })
     )
 }
