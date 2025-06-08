@@ -91,28 +91,28 @@ class PatientMeasurementScreenViewModel(
 
     private fun validateBpmField() {
         if (state.value.bpm.isBlank()) {
-            return state.update { it.copy(bpm = "Puls nie może być pusty") }
+            return state.update { it.copy(bpmError = "Puls nie może być pusty") }
         }
         if (state.value.bpm.toIntOrNull() == null) {
-            return state.update { it.copy(bpm = "Nieprawidłowy puls") }
+            return state.update { it.copy(bpmError = "Nieprawidłowy puls") }
         }
     }
 
     private fun validateSysField() {
         if (state.value.sys.isBlank()) {
-            return state.update { it.copy(bpm = "Ciśnienie nie może być puste") }
+            return state.update { it.copy(sysError = "Ciśnienie nie może być puste") }
         }
         if (state.value.sys.toIntOrNull() == null) {
-            return state.update { it.copy(bpm = "Nieprawidłowe ciśnienie") }
+            return state.update { it.copy(sysError = "Nieprawidłowe ciśnienie") }
         }
     }
 
     private fun validateDiaField() {
         if (state.value.dia.isBlank()) {
-            return state.update { it.copy(bpm = "Ciśnienie nie może być puste") }
+            return state.update { it.copy(diaError = "Ciśnienie nie może być puste") }
         }
         if (state.value.dia.toIntOrNull() == null) {
-            return state.update { it.copy(bpm = "Nieprawidłowe ciśnienie") }
+            return state.update { it.copy(diaError = "Nieprawidłowe ciśnienie") }
         }
     }
 
