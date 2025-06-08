@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.cardiotrack.screens.patient.measurement.PatientMeasurementScreen
+import com.example.cardiotrack.screens.patient.statistics.PatientStatisticsScreen
 import com.example.cardiotrack.services.patient.PatientService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -60,5 +61,9 @@ class PatientDashboardScreenViewModel(
             val measurements = patientService.getMeasurements(routeData.user)
             state.update { it.copy(measurements = measurements) }
         }
+    }
+
+    fun redirectToStatistics() {
+        navController.navigate(PatientStatisticsScreen(routeData.user))
     }
 }

@@ -23,10 +23,7 @@ import kotlinx.serialization.Serializable
 data class PatientStatisticsScreen(val user: User.Patient)
 
 @Composable
-fun PatientStatisticsScreen(
-    routeData: PatientStatisticsScreen,
-    viewModel: PatientStatisticsScreenViewModel
-) {
+fun PatientStatisticsScreen(viewModel: PatientStatisticsScreenViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val weeklyAverage = state.weeklyAverage()
     val monthlyAverage = state.monthlyAverage()
@@ -79,7 +76,6 @@ fun PatientStatisticsScreenPreview() {
     )
 
     PatientStatisticsScreen(
-        routeData = routeData,
         viewModel = viewModel(factory = viewModelFactory {
             initializer { PatientStatisticsScreenViewModel(routeData, FirebasePatientService()) }
         })

@@ -96,7 +96,6 @@ fun CardioTrackApp() {
             }
             composable<PatientStatisticsScreen>(typeMap) {
                 PatientStatisticsScreen(
-                    routeData = it.toRoute<PatientStatisticsScreen>(),
                     viewModel = viewModel(factory = viewModelFactory {
                         initializer {
                             PatientStatisticsScreenViewModel(

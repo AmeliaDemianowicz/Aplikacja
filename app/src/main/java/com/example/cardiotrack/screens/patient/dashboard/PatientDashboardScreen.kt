@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -52,7 +53,8 @@ data class PatientDashboardScreen(val user: User.Patient)
 
 @Composable
 fun PatientDashboardScreen(
-    routeData: PatientDashboardScreen, viewModel: PatientDashboardScreenViewModel
+    routeData: PatientDashboardScreen,
+    viewModel: PatientDashboardScreenViewModel
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -160,6 +162,13 @@ fun PatientDashboardScreen(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Dodaj pomiar")
+        }
+
+        TextButton(
+            onClick = viewModel::redirectToStatistics,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text("Statystyki")
         }
     }
 }

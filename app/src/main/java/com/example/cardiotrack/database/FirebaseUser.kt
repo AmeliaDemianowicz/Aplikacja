@@ -67,7 +67,9 @@ data class FirebaseUser(
                 type = FirebaseUserType.PATIENT,
                 firstName = user.firstName,
                 lastName = user.lastName,
-                fullName = "${user.firstName} ${user.lastName}"
+                fullName = "${user.firstName} ${user.lastName}",
+                birthDate = user.birthDate.toEpochMilliseconds(),
+                sex = user.sex
             )
         }
     }
