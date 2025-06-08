@@ -21,6 +21,7 @@ import com.example.cardiotrack.screens.auth.signup.SignUpScreenViewModel
 import com.example.cardiotrack.screens.doctor.dashboard.DoctorDashboardScreen
 import com.example.cardiotrack.screens.doctor.dashboard.DoctorDashboardScreenViewModel
 import com.example.cardiotrack.screens.patient.dashboard.PatientDashboardScreen
+import com.example.cardiotrack.screens.patient.dashboard.PatientDashboardScreenViewModel
 import com.example.cardiotrack.screens.patient.measurement.PatientMeasurementScreen
 import com.example.cardiotrack.screens.patient.measurement.PatientMeasurementScreenViewModel
 import com.example.cardiotrack.services.auth.FirebaseAuthService
@@ -70,7 +71,10 @@ fun CardioTrackApp() {
             }
             composable<PatientDashboardScreen>(typeMap) {
                 PatientDashboardScreen(
-                    routeData = it.toRoute<PatientDashboardScreen>()
+                    routeData = it.toRoute<PatientDashboardScreen>(),
+                    viewModel = viewModel(factory = viewModelFactory {
+                        initializer { PatientDashboardScreenViewModel(navController) }
+                    })
                 )
             }
             composable<PatientMeasurementScreen>(typeMap) {

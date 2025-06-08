@@ -73,7 +73,7 @@ fun PatientMeasurementScreen(
     ) {
         OutlinedTextField(
             label = { Text("Puls (HR) [bpm]") },
-            value = state.bpm ?: "",
+            value = state.bpm,
             onValueChange = viewModel::handleBpmChange,
             enabled = !state.loading,
             isError = state.bpmError != null,
@@ -84,7 +84,7 @@ fun PatientMeasurementScreen(
         )
         OutlinedTextField(
             label = { Text("Ciśnienie skurczowe (SYS) [mmHg]") },
-            value = state.sys ?: "",
+            value = state.sys,
             onValueChange = viewModel::handleSysChange,
             enabled = !state.loading,
             isError = state.sysError != null,
@@ -95,7 +95,7 @@ fun PatientMeasurementScreen(
         )
         OutlinedTextField(
             label = { Text("Ciśnienie rozkurczowe (DIA) [mmHg]") },
-            value = state.dia ?: "",
+            value = state.dia,
             onValueChange = viewModel::handleDiaChange,
             enabled = !state.loading,
             isError = state.diaError != null,
