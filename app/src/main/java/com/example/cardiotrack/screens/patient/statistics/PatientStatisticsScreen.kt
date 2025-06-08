@@ -1,5 +1,6 @@
 package com.example.cardiotrack.screens.patient.statistics
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
@@ -19,24 +20,51 @@ import com.example.cardiotrack.services.patient.FirebasePatientService
 import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBar
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-
+import com.example.cardiotrack.R
 
 
 @Serializable
 data class PatientStatisticsScreen(val user: User.Patient)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatientStatisticsScreen(viewModel: PatientStatisticsScreenViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val weeklyAverage = state.weeklyAverage()
     val monthlyAverage = state.monthlyAverage()
+    TopAppBar(
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "Logo aplikacji",
+                    modifier = Modifier
+                        .size(40.dp) // mały rozmiar
+                        .padding(start = 4.dp)
+                )
+            }
+        }
+    )
 
     if (state.loading) {
         CircularProgressIndicator(modifier = Modifier.padding(16.dp))
     } else {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 144.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Top
+        ) {
 
             // Średnia z 7 dni
             Text(

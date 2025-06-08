@@ -1,10 +1,14 @@
 package com.example.cardiotrack.screens.patient.measurement
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -19,6 +23,7 @@ import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.TimePickerDialogDefaults
 import androidx.compose.material3.TimePickerDisplayMode
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,6 +34,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,6 +43,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.rememberNavController
+import com.example.cardiotrack.R
 import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.domain.User
 import com.example.cardiotrack.services.patient.FirebasePatientService
@@ -60,14 +67,31 @@ fun PatientMeasurementScreen(
     val timePickerState = rememberTimePickerState()
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-
+    TopAppBar(
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "Logo aplikacji",
+                    modifier = Modifier
+                        .size(40.dp) // mały rozmiar
+                        .padding(start = 4.dp)
+                )
+            }
+        }
+    )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxSize()
             .padding(30.dp)
+
     ) {
+
         OutlinedTextField(
             label = { Text("Puls (HR) [bpm]") },
             value = state.bpm,
@@ -78,6 +102,7 @@ fun PatientMeasurementScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp),
         )
         OutlinedTextField(
             label = { Text("Ciśnienie skurczowe (SYS) [mmHg]") },
@@ -89,6 +114,7 @@ fun PatientMeasurementScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp),
         )
         OutlinedTextField(
             label = { Text("Ciśnienie rozkurczowe (DIA) [mmHg]") },
@@ -100,6 +126,7 @@ fun PatientMeasurementScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp),
         )
         OutlinedTextField(
             value = state.date?.let {
@@ -108,6 +135,7 @@ fun PatientMeasurementScreen(
             } ?: "",
             onValueChange = {},
             readOnly = true,
+            shape = RoundedCornerShape(15.dp),
             label = { Text("Godzina") },
             isError = state.dateError != null,
             supportingText = state.dateError?.let { { Text(it) } },
@@ -157,6 +185,7 @@ fun PatientMeasurementScreen(
             singleLine = false,
             maxLines = 5,
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp),
         )
         FilledTonalButton(
             modifier = Modifier.fillMaxWidth(),

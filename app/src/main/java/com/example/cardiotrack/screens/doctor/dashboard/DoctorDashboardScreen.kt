@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -72,12 +73,20 @@ fun DoctorDashboardScreen(
     ) {
         TopAppBar(
             title = {
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "Logo aplikacji",
-                    modifier = Modifier.padding(4.dp)
-                )
-            })
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo),
+                        contentDescription = "Logo aplikacji",
+                        modifier = Modifier
+                            .size(40.dp) // mały rozmiar
+                            .padding(start = 4.dp)
+                    )
+                }
+            }
+        )
 
         OutlinedTextField(
             label = { Text("Wyszukaj pacjenta") },
