@@ -18,6 +18,11 @@ import com.example.cardiotrack.domain.User
 import com.example.cardiotrack.services.patient.FirebasePatientService
 import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
+import androidx.compose.foundation.layout.*
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+
+
 
 @Serializable
 data class PatientStatisticsScreen(val user: User.Patient)
@@ -31,8 +36,14 @@ fun PatientStatisticsScreen(viewModel: PatientStatisticsScreenViewModel) {
     if (state.loading) {
         CircularProgressIndicator(modifier = Modifier.padding(16.dp))
     } else {
-        Column {
-            Text("Średnia wartość z 7 dni")
+        Column(modifier = Modifier.padding(16.dp)) {
+
+            // Średnia z 7 dni
+            Text(
+                text = "Średnia wartość z 7 dni",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
             if (weeklyAverage != null) {
                 Text("SYS: ${weeklyAverage.sys} mmHg")
                 Text("DIA: ${weeklyAverage.dia} mmHg")
@@ -40,7 +51,15 @@ fun PatientStatisticsScreen(viewModel: PatientStatisticsScreenViewModel) {
             } else {
                 Text("Brak danych")
             }
-            Text("Średnia wartość z 30 dni")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Średnia z 30 dni
+            Text(
+                text = "Średnia wartość z 30 dni",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
             if (monthlyAverage != null) {
                 Text("SYS: ${monthlyAverage.sys} mmHg")
                 Text("DIA: ${monthlyAverage.dia} mmHg")
@@ -48,15 +67,36 @@ fun PatientStatisticsScreen(viewModel: PatientStatisticsScreenViewModel) {
             } else {
                 Text("Brak danych")
             }
-            Text("Liczba dni w normie*")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Dni w normie
+            Text(
+                text = "\u2705 Liczba dni w normie",
+                fontWeight = FontWeight.Bold
+            )
             Text("${state.daysInReferenceRange()}")
-            Text("Liczba dni poza normą*")
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Dni poza normą
+            Text(
+                text = "\u274C Liczba dni poza normą",
+                fontWeight = FontWeight.Bold
+            )
             Text("${state.daysNotInReferenceRange()}")
 
-            Text("*Zakresy referencyjne")
-            Text("SYS: 90-129 mmHg")
-            Text("SYS: 60-84 mmHg")
-            Text("SYS: 60-100 uderzeń na minute (w spoczynku)")
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Zakresy referencyjne
+            Text(
+                text = "*Zakresy referencyjne",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text("SYS: 90–129 mmHg")
+            Text("DIA: 60–84 mmHg")
+            Text("HR: 60–100 uderzeń/min (w spoczynku)")
         }
     }
 }
