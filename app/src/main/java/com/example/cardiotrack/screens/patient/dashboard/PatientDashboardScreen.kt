@@ -48,6 +48,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
+import java.time.LocalDate
 
 @Serializable
 data class PatientDashboardScreen(val user: User.Patient)
@@ -77,7 +78,9 @@ fun PatientDashboardScreen(
             }
 
             Text(
-                text = "${state.selectedMonth.month.name.lowercase().replaceFirstChar { it.uppercase() }} ${state.selectedMonth.year}",
+                text = "${
+                    state.selectedMonth.month.name.lowercase().replaceFirstChar { it.uppercase() }
+                } ${state.selectedMonth.year}",
                 style = MaterialTheme.typography.titleLarge
             )
 
@@ -121,12 +124,14 @@ fun PatientDashboardScreen(
                 val hasEvent = measurementsForDay.isNotEmpty()
                 val isSelected = date == state.selectedDate
                 val isInRange = viewModel.isDayInReferenceRange(date)
+                val isEnabled = date <= LocalDate.now()
 
                 Box(
                     contentAlignment = Alignment.TopCenter,
                     modifier = Modifier
                         .height(72.dp)
                         .clickable(
+                            enabled = isEnabled,
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }) {
                             viewModel.handleSelectedDateChange(date)
@@ -136,13 +141,17 @@ fun PatientDashboardScreen(
                             modifier = Modifier
                                 .size(32.dp)
                                 .background(
-                                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                    color = if (!isEnabled) Color.Transparent
+                                    else if (isSelected) MaterialTheme.colorScheme.primary
+                                    else Color.Transparent,
                                     shape = CircleShape
                                 ), contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = day.toString(),
-                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else Color.Unspecified,
+                                color = if (!isEnabled) MaterialTheme.colorScheme.surfaceDim
+                                else if (isSelected) MaterialTheme.colorScheme.onPrimary
+                                else Color.Unspecified,
                                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                             )
                         }
@@ -153,7 +162,9 @@ fun PatientDashboardScreen(
                                     modifier = Modifier
                                         .size(6.dp)
                                         .background(
-                                            color = if (isInRange) Color(0xFF4CAF50) else Color(0xFFF44336),
+                                            color = if (isInRange) Color(0xFF4CAF50) else Color(
+                                                0xFFF44336
+                                            ),
                                             shape = CircleShape
                                         )
                                 )
