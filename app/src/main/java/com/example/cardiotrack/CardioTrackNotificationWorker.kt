@@ -1,28 +1,35 @@
 package com.example.cardiotrack
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import java.util.Calendar
+import java.time.Duration
+import java.time.LocalDateTime
 
 
 class CardioTrackNotificationWorker(context: Context, params: WorkerParameters) :
     Worker(context, params) {
-    override fun doWork(): Result {
-        val notificationManager =
-            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    override fun doWork(): Result {
+        val notificationManager = NotificationManagerCompat.from(applicationContext)
+
+        val channelId = "measurement_channel"
         val channel = NotificationChannel(
-            "daily_channel", "Daily Notifications",
-            NotificationManager.IMPORTANCE_DEFAULT
+            channelId,
+            "Measurement Notifications",
+            NotificationManager.IMPORTANCE_HIGH
         )
 
         notificationManager.createNotificationChannel(channel)
 
-        val notification = NotificationCompat.Builder(applicationContext, "daily_channel")
+        val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setContentTitle("Dodaj pomiar!")
             .setContentText("Nadeszła pora aby dodać pomiar, przejdź do aplikacji")
             .setSmallIcon(R.drawable.ic_notification)
@@ -34,19 +41,17 @@ class CardioTrackNotificationWorker(context: Context, params: WorkerParameters) 
     }
 
     companion object {
-        fun initialDelay(): Long {
-            val now = Calendar.getInstance()
-            val target = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 8)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
+        fun initialDelay(hour: Int, minute: Int): Long {
+            val now = LocalDateTime.now()
+            val nextTime = now.withHour(hour).withMinute(minute).withSecond(0).withNano(0)
+
+            val delay = if (nextTime.isAfter(now)) {
+                Duration.between(now, nextTime)
+            } else {
+                Duration.between(now, nextTime.plusDays(1))
             }
 
-            if (now.after(target)) {
-                target.add(Calendar.DAY_OF_YEAR, 1)
-            }
-
-            return target.timeInMillis - now.timeInMillis
+            return delay.toMillis()
         }
     }
 }

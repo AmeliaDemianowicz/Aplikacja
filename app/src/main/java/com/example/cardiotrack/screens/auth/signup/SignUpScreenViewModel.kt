@@ -1,9 +1,14 @@
 package com.example.cardiotrack.screens.auth.signup
 
+import android.content.Context
 import android.util.Patterns.EMAIL_ADDRESS
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.cardiotrack.CardioTrackNotificationWorker
 import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.domain.User
 import com.example.cardiotrack.screens.auth.signin.SignInScreen
@@ -17,6 +22,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import java.time.LocalTime
+import java.util.concurrent.TimeUnit
 
 class SignUpScreenViewModel(
     private val authService: AuthService,
@@ -170,7 +176,7 @@ class SignUpScreenViewModel(
         }
     }
 
-    fun handleSignUp() {
+    fun handleSignUp(context: Context) {
         viewModelScope.launch(CoroutineExceptionHandler { _, error -> handleError(error) }) {
             state.update { it.copy(emailError = null, passwordError = null) }
             validateForm()
@@ -200,6 +206,23 @@ class SignUpScreenViewModel(
                     birthDate = userData.birthDate,
                     pesel = userData.pesel
                 )
+
+
+                WorkManager.getInstance(context).cancelAllWorkByTag("measurement_notification")
+
+                userData.dailyMeasurementReminders.filterNotNull().forEach {
+                    val delay = CardioTrackNotificationWorker.initialDelay(it.hour, it.minute)
+
+                    WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+                        "measurement_notification_work_${it.hour}_${it.minute}",
+                        ExistingPeriodicWorkPolicy.REPLACE,
+                        PeriodicWorkRequestBuilder<CardioTrackNotificationWorker>(1, TimeUnit.DAYS)
+                            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                            .addTag("measurement_notification")
+                            .build()
+                    )
+                }
+
                 state.update { it.copy(loading = false) }
                 redirectToNextScreen(user)
             }

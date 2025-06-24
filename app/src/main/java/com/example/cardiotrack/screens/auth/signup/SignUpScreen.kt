@@ -37,6 +37,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -313,6 +314,7 @@ fun SignUpScreenPersonalInfoStep(viewModel: SignUpScreenViewModel) {
 @Composable
 fun SignUpScreenMeasurementsStep(viewModel: SignUpScreenViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     ExposedDropdownMenuBox(
         expanded = state.showDoctorDropdown,
@@ -392,6 +394,7 @@ fun SignUpScreenMeasurementsStep(viewModel: SignUpScreenViewModel) {
                 ?.format(DateTimeFormatter.ofPattern("HH:mm"))
                 ?: "",
             onValueChange = {},
+            enabled = !state.loading,
             readOnly = true,
             shape = RoundedCornerShape(15.dp),
             label = { Text("Godzina ${index + 1} powiadomienia") },
@@ -442,7 +445,7 @@ fun SignUpScreenMeasurementsStep(viewModel: SignUpScreenViewModel) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(15.dp),
         enabled = !state.loading,
-        onClick = viewModel::handleSignUp
+        onClick = { viewModel.handleSignUp(context) }
     ) {
         Text("Dalej")
     }

@@ -12,7 +12,7 @@ enum class SignUpScreenStep {
 }
 
 data class SignUpScreenState(
-    val step: SignUpScreenStep = SignUpScreenStep.MEASUREMENTS,
+    val step: SignUpScreenStep = SignUpScreenStep.CREDENTIALS,
     val email: String = "",
     val emailError: String? = null,
     val password: String = "",
