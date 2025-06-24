@@ -22,7 +22,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
+import androidx.compose.material3.TimePickerDialogDefaults
+import androidx.compose.material3.TimePickerDisplayMode
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -343,6 +348,95 @@ fun SignUpScreenMeasurementsStep(viewModel: SignUpScreenViewModel) {
         }
     }
 
+    ExposedDropdownMenuBox(
+        expanded = state.showDailyMeasurementCountDropdown,
+        onExpandedChange = viewModel::changeDailyMeasurementRemindersCountDropdown
+    ) {
+        OutlinedTextField(
+            value = state.dailyMeasurementRemindersCount.toString(),
+            onValueChange = {},
+            enabled = !state.loading,
+            readOnly = true,
+            label = { Text("Ilość dziennych powiadomień o pomiarach") },
+            isError = state.dailyMeasurementRemindersCountError != null,
+            supportingText = state.dailyMeasurementRemindersCountError?.let { { Text(it) } },
+            shape = RoundedCornerShape(15.dp),
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
+        )
+
+        ExposedDropdownMenu(
+            expanded = state.showDailyMeasurementCountDropdown,
+            onDismissRequest = { viewModel.changeDailyMeasurementRemindersCountDropdown(false) }
+        ) {
+            listOf(1, 2, 3).forEach { count ->
+                DropdownMenuItem(
+                    text = { Text("$count") },
+                    onClick = {
+                        viewModel.handleDailyMeasurementRemindersCountChange(count)
+                        viewModel.changeDailyMeasurementRemindersCountDropdown(false)
+                    }
+                )
+            }
+        }
+    }
+
+    (0..<state.dailyMeasurementRemindersCount).forEach { index ->
+        val timePickerState = rememberTimePickerState()
+        val focusRequester = remember { FocusRequester() }
+        val focusManager = LocalFocusManager.current
+
+        OutlinedTextField(
+            value = state.dailyMeasurementReminders[index]
+                ?.format(DateTimeFormatter.ofPattern("HH:mm"))
+                ?: "",
+            onValueChange = {},
+            readOnly = true,
+            shape = RoundedCornerShape(15.dp),
+            label = { Text("Godzina ${index + 1} powiadomienia") },
+            isError = state.dailyMeasurementRemindersErrors[index] != null,
+            supportingText = state.dailyMeasurementRemindersErrors[index]?.let { { Text(it) } },
+            trailingIcon = {
+                IconButton(onClick = { viewModel.showDailyMeasurementReminderTimeModal(index) }) {
+                    Icon(Icons.Default.DateRange, contentDescription = "Pick Date")
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
+                .onFocusChanged {
+                    if (it.isFocused && !state.showDailyMeasurementRemindersTimeModals[index]) {
+                        viewModel.showDailyMeasurementReminderTimeModal(index)
+                    }
+                }
+
+        )
+        if (state.showDailyMeasurementRemindersTimeModals[index]) {
+            TimePickerDialog(
+                title = { TimePickerDialogDefaults.Title(displayMode = TimePickerDisplayMode.Picker) },
+                onDismissRequest = {
+                    focusManager.clearFocus()
+                    viewModel.hideDailyMeasurementRemindersTimeModals(index)
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        focusManager.clearFocus()
+                        viewModel.handleDailyMeasurementReminderChange(
+                            index,
+                            timePickerState.hour,
+                            timePickerState.minute
+                        )
+                    }) {
+                        Text("Potwierdź")
+                    }
+                }
+            ) {
+                TimePicker(state = timePickerState)
+            }
+        }
+    }
+
     Spacer(modifier = Modifier.padding(20.dp))
     FilledTonalButton(
         modifier = Modifier.fillMaxWidth(),
@@ -361,6 +455,7 @@ fun SignUpScreenMeasurementsStep(viewModel: SignUpScreenViewModel) {
         Text("Wróć")
     }
 }
+
 
 @Preview
 @Composable

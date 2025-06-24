@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
+import java.time.LocalTime
 
 class SignUpScreenViewModel(
     private val authService: AuthService,
@@ -118,6 +119,57 @@ class SignUpScreenViewModel(
         state.update { it.copy(doctor = doctor, doctorError = null) }
     }
 
+
+    fun changeDailyMeasurementRemindersCountDropdown(showDailyMeasurementCountDropdown: Boolean) {
+        state.update { it.copy(showDailyMeasurementCountDropdown = showDailyMeasurementCountDropdown) }
+    }
+
+    fun handleDailyMeasurementRemindersCountChange(count: Int) {
+        state.update {
+            it.copy(
+                dailyMeasurementRemindersCount = count,
+                dailyMeasurementRemindersCountError = null,
+                dailyMeasurementReminders = List(count) { index ->
+                    it.dailyMeasurementReminders.getOrNull(index)
+                },
+                dailyMeasurementRemindersErrors = List(count) { null },
+                showDailyMeasurementRemindersTimeModals = List(count) { false }
+            )
+        }
+    }
+
+    fun handleDailyMeasurementReminderChange(reminderIndex: Int, hour: Int, minute: Int) {
+        state.update {
+            it.copy(
+                dailyMeasurementReminders = it.dailyMeasurementReminders
+                    .toMutableList()
+                    .also { it[reminderIndex] = LocalTime.of(hour, minute) },
+                dailyMeasurementRemindersErrors = it.dailyMeasurementRemindersErrors
+                    .toMutableList()
+                    .also { it[reminderIndex] = null }
+            )
+        }
+        hideDailyMeasurementRemindersTimeModals(reminderIndex)
+    }
+
+    fun showDailyMeasurementReminderTimeModal(reminderIndex: Int) {
+        state.update {
+            it.copy(
+                showDailyMeasurementRemindersTimeModals = it.showDailyMeasurementRemindersTimeModals.toMutableList()
+                    .also { it[reminderIndex] = true }
+            )
+        }
+    }
+
+    fun hideDailyMeasurementRemindersTimeModals(reminderIndex: Int) {
+        state.update {
+            it.copy(
+                showDailyMeasurementRemindersTimeModals = it.showDailyMeasurementRemindersTimeModals.toMutableList()
+                    .also { it[reminderIndex] = false }
+            )
+        }
+    }
+
     fun handleSignUp() {
         viewModelScope.launch(CoroutineExceptionHandler { _, error -> handleError(error) }) {
             state.update { it.copy(emailError = null, passwordError = null) }
@@ -171,6 +223,8 @@ class SignUpScreenViewModel(
         validateSexField()
         validateDoctorField()
         validatePeselField()
+        validateDailyMeasurementRemindersCountField()
+        validateDailyMeasurementRemindersFields()
     }
 
     private fun validateEmailField() {
@@ -231,7 +285,21 @@ class SignUpScreenViewModel(
 
     private fun validateDoctorField() {
         if (state.value.doctor == null) {
-            return state.update { it.copy(doctorError = "Należy wybrać docktora") }
+            return state.update { it.copy(doctorError = "Należy wybrać doktora") }
+        }
+    }
+
+    private fun validateDailyMeasurementRemindersCountField() {
+        if (state.value.dailyMeasurementRemindersCount !in 1..3) {
+            return state.update { it.copy(dailyMeasurementRemindersCountError = "Należy wybrać od 1 do 3 powiadomień") }
+        }
+    }
+
+    private fun validateDailyMeasurementRemindersFields() {
+        return state.update {
+            it.copy(dailyMeasurementRemindersErrors = it.dailyMeasurementReminders.map {
+                if (it == null) "Należy wybrać godzine pomiaru" else null
+            })
         }
     }
 

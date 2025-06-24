@@ -3,6 +3,7 @@ package com.example.cardiotrack.screens.auth.signup
 import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.domain.User
 import kotlinx.datetime.Instant
+import java.time.LocalTime
 
 enum class SignUpScreenStep {
     CREDENTIALS,
@@ -11,7 +12,7 @@ enum class SignUpScreenStep {
 }
 
 data class SignUpScreenState(
-    val step: SignUpScreenStep = SignUpScreenStep.CREDENTIALS,
+    val step: SignUpScreenStep = SignUpScreenStep.MEASUREMENTS,
     val email: String = "",
     val emailError: String? = null,
     val password: String = "",
@@ -34,5 +35,11 @@ data class SignUpScreenState(
     val doctor: User.Doctor? = null,
     val doctorError: String? = null,
     val showDoctorDropdown: Boolean = false,
+    val dailyMeasurementRemindersCount: Int = 1,
+    val dailyMeasurementRemindersCountError: String? = null,
+    val showDailyMeasurementCountDropdown: Boolean = false,
+    val dailyMeasurementReminders: List<LocalTime?> = listOf(null),
+    val dailyMeasurementRemindersErrors: List<String?> = listOf(null),
+    val showDailyMeasurementRemindersTimeModals: List<Boolean> = listOf(false),
     val loading: Boolean = false,
 )
