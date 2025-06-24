@@ -1,5 +1,6 @@
 package com.example.cardiotrack.screens.patient.dashboard
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -23,13 +25,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -69,9 +75,9 @@ fun PatientDashboardScreen(
 
     val daysInMonth = state.selectedMonth.lengthOfMonth()
     val firstDayOfWeek = (state.selectedMonth.atDay(1).dayOfWeek.value - 1)
-    val currentDayMeasurements = state.measurements
-        .filter { it.data.date.toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate() == state.selectedDate }
-        .sortedBy { it.data.date }
+    val currentDayMeasurements =
+        state.measurements.filter { it.data.date.toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate() == state.selectedDate }
+            .sortedBy { it.data.date }
 
     Column(
         modifier = Modifier
@@ -90,9 +96,7 @@ fun PatientDashboardScreen(
             Text(
                 text = "${
                     state.selectedMonth.month.name.lowercase().replaceFirstChar { it.uppercase() }
-                } ${state.selectedMonth.year}",
-                style = MaterialTheme.typography.titleLarge
-            )
+                } ${state.selectedMonth.year}", style = MaterialTheme.typography.titleLarge)
 
             IconButton(onClick = viewModel::handleGoToNextMonth) {
                 Icon(Icons.Default.ArrowForward, contentDescription = "Next month")
@@ -153,8 +157,7 @@ fun PatientDashboardScreen(
                                 .background(
                                     color = if (!isEnabled) Color.Transparent
                                     else if (isSelected) MaterialTheme.colorScheme.primary
-                                    else Color.Transparent,
-                                    shape = CircleShape
+                                    else Color.Transparent, shape = CircleShape
                                 ), contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -172,8 +175,8 @@ fun PatientDashboardScreen(
                                     modifier = Modifier
                                         .size(6.dp)
                                         .background(
-                                            color = if (isInRange) Color(0xFF4CAF50) else Color(0xFFF44336),
-                                            shape = CircleShape
+                                            color = if (isInRange) Color.Green.copy(alpha = 0.5f)
+                                            else Color.Red.copy(alpha = 0.5f), shape = CircleShape
                                         )
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
@@ -193,30 +196,54 @@ fun PatientDashboardScreen(
         Spacer(Modifier.height(16.dp))
 
         LazyColumn(modifier = Modifier.weight(0.75f)) {
-            items(currentDayMeasurements, key = { it.id }) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(8.dp)
+            items(currentDayMeasurements, key = { it.id }) { measurement ->
+                val swipeState = rememberSwipeToDismissBoxState(
+                    confirmValueChange = {
+                        if (it == SwipeToDismissBoxValue.EndToStart) {
+                            viewModel.deleteMeasurement(measurement)
+                        }
+                        it != SwipeToDismissBoxValue.Settled
+                    }
+                )
+
+                OutlinedCard(modifier = Modifier.padding(8.dp)) {
+                    SwipeToDismissBox(
+                        state = swipeState,
+                        modifier = Modifier.animateContentSize(),
+                        enableDismissFromStartToEnd = false,
+                        backgroundContent = {
+                            if (swipeState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Usuń pomiar",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.Red.copy(0.3f))
+                                        .wrapContentSize(Alignment.CenterEnd)
+                                        .padding(12.dp),
+                                    tint = Color.White
+                                )
+                            }
+                        }
                     ) {
-                        Text(
-                            it.data.date
-                                .toLocalDateTime(TimeZone.currentSystemDefault())
-                                .toJavaLocalDateTime()
-                                .format(DateTimeFormatter.ofPattern("HH:mm")),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text("SYS: ${it.data.sys} mmHg")
-                        Text("DIA: ${it.data.dia} mmHg")
-                        Text("HR: ${it.data.bpm} bpm")
-                        if (it.data.notes != null) {
-                            Text("Notatki:")
-                            Text(it.data.notes)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp)
+                        ) {
+                            Text(
+                                measurement.data.date.toLocalDateTime(TimeZone.currentSystemDefault())
+                                    .toJavaLocalDateTime()
+                                    .format(DateTimeFormatter.ofPattern("HH:mm")),
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text("SYS: ${measurement.data.sys} mmHg")
+                            Text("DIA: ${measurement.data.dia} mmHg")
+                            Text("HR: ${measurement.data.bpm} bpm")
+                            if (measurement.data.notes != null) {
+                                Text("Notatki:")
+                                Text(measurement.data.notes)
+                            }
                         }
                     }
                 }
@@ -262,8 +289,7 @@ fun PatientDashboardScreenPreview() {
     )
 
     PatientDashboardScreen(
-        routeData = routeData,
-        viewModel = viewModel(factory = viewModelFactory {
+        routeData = routeData, viewModel = viewModel(factory = viewModelFactory {
             initializer {
                 PatientDashboardScreenViewModel(
                     routeData, FirebasePatientService(), navController

@@ -3,6 +3,7 @@ package com.example.cardiotrack.screens.patient.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.cardiotrack.domain.Measurement
 import com.example.cardiotrack.screens.patient.measurement.PatientMeasurementScreen
 import com.example.cardiotrack.screens.patient.statistics.PatientStatisticsScreen
 import com.example.cardiotrack.services.patient.PatientService
@@ -63,6 +64,13 @@ class PatientDashboardScreenViewModel(
                 state.value.selectedDate.toKotlinLocalDate().toString()
             )
         )
+    }
+
+    fun deleteMeasurement(measurement: Measurement) {
+        viewModelScope.launch {
+            patientService.deleteMeasurement(measurement)
+            state.update { it.copy(measurements = it.measurements.filter { it.id != measurement.id }) }
+        }
     }
 
     fun loadMeasurements() {

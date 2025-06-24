@@ -21,8 +21,9 @@ class FirebasePatientService : PatientService {
     }
 
     override suspend fun addMeasurement(user: User.Patient, data: MeasurementData) {
+        val measurementId = measurements.document().id
         val measurementData = FirebaseMeasurement(
-            id = measurements.document().id,
+            id = measurementId,
             userId = user.id,
             bpm = data.bpm,
             sys = data.sys,
@@ -31,7 +32,7 @@ class FirebasePatientService : PatientService {
             notes = data.notes
         )
 
-        measurements.add(measurementData).await()
+        measurements.document(measurementId).set(measurementData).await()
     }
 
     override suspend fun deleteMeasurement(measurement: Measurement) {
