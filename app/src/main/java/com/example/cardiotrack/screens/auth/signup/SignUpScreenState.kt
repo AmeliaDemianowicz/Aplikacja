@@ -4,7 +4,14 @@ import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.domain.User
 import kotlinx.datetime.Instant
 
+enum class SignUpScreenStep {
+    CREDENTIALS,
+    PERSONAL_INFO,
+    MEASUREMENTS
+}
+
 data class SignUpScreenState(
+    val step: SignUpScreenStep = SignUpScreenStep.CREDENTIALS,
     val email: String = "",
     val emailError: String? = null,
     val password: String = "",

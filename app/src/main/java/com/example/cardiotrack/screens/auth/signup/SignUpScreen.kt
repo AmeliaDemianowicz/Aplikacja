@@ -64,9 +64,7 @@ data object SignUpScreen
 @Composable
 fun SignUpScreen(viewModel: SignUpScreenViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val datePickerState = rememberDatePickerState()
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
+
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -83,218 +81,284 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
                 .padding(bottom = 24.dp),
             contentScale = ContentScale.Fit
         )
-        OutlinedTextField(
-            label = { Text("E-mail") },
-            value = state.email,
-            onValueChange = viewModel::handleEmailChange,
-            enabled = !state.loading,
-            isError = state.emailError != null,
-            supportingText = state.emailError?.let { { Text(it) } },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp),
-        )
-        OutlinedTextField(
-            label = { Text("Hasło") },
-            value = state.password,
-            onValueChange = viewModel::handlePasswordChange,
-            enabled = !state.loading,
-            isError = state.passwordError != null,
-            supportingText = state.passwordError?.let { { Text(it) } },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp),
-            visualTransformation = {
-                TransformedText(
-                    AnnotatedString("*".repeat(it.text.length)), OffsetMapping.Identity
-                )
+
+        when (state.step) {
+            SignUpScreenStep.CREDENTIALS -> SignUpScreenCredentialsStep(viewModel)
+            SignUpScreenStep.PERSONAL_INFO -> SignUpScreenPersonalInfoStep(viewModel)
+            SignUpScreenStep.MEASUREMENTS -> SignUpScreenMeasurementsStep(viewModel)
+        }
+
+    }
+}
+
+@Composable
+fun SignUpScreenCredentialsStep(viewModel: SignUpScreenViewModel) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    OutlinedTextField(
+        label = { Text("E-mail") },
+        value = state.email,
+        onValueChange = viewModel::handleEmailChange,
+        enabled = !state.loading,
+        isError = state.emailError != null,
+        supportingText = state.emailError?.let { { Text(it) } },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+    )
+    OutlinedTextField(
+        label = { Text("Hasło") },
+        value = state.password,
+        onValueChange = viewModel::handlePasswordChange,
+        enabled = !state.loading,
+        isError = state.passwordError != null,
+        supportingText = state.passwordError?.let { { Text(it) } },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+        visualTransformation = {
+            TransformedText(
+                AnnotatedString("*".repeat(it.text.length)), OffsetMapping.Identity
+            )
+        },
+    )
+    OutlinedTextField(
+        label = { Text("Powtórz hasło") },
+        value = state.passwordRepeat,
+        onValueChange = viewModel::handlePasswordRepeatChange,
+        enabled = !state.loading,
+        isError = state.passwordRepeatError != null,
+        supportingText = state.passwordRepeatError?.let { { Text(it) } },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+        visualTransformation = {
+            TransformedText(
+                AnnotatedString("*".repeat(it.text.length)), OffsetMapping.Identity
+            )
+        },
+    )
+
+    Spacer(modifier = Modifier.padding(20.dp))
+    FilledTonalButton(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+        enabled = !state.loading,
+        onClick = viewModel::goToPersonalInfoStep
+    ) {
+        Text("Zarejestruj się")
+    }
+    TextButton(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+        enabled = !state.loading,
+        onClick = viewModel::handleSignIn
+    ) {
+        Text("Zaloguj się")
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SignUpScreenPersonalInfoStep(viewModel: SignUpScreenViewModel) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val datePickerState = rememberDatePickerState()
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    OutlinedTextField(
+        label = { Text("Imie") },
+        value = state.firstName,
+        onValueChange = viewModel::handleFirstNameChange,
+        enabled = !state.loading,
+        isError = state.firstNameError != null,
+        supportingText = state.firstNameError?.let { { Text(it) } },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+    )
+    OutlinedTextField(
+        label = { Text("Nazwisko") },
+        value = state.lastName,
+        onValueChange = viewModel::handleLastNameChange,
+        enabled = !state.loading,
+        isError = state.lastNameError != null,
+        supportingText = state.lastNameError?.let { { Text(it) } },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+    )
+
+    OutlinedTextField(
+        label = { Text("PESEL") },
+        value = state.pesel,
+        onValueChange = viewModel::onPeselChanged,
+        enabled = !state.loading,
+        isError = state.peselError != null,
+        supportingText = state.peselError?.let { { Text(it) } },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+    )
+
+    OutlinedTextField(
+        value = state.birthDate?.let {
+            DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                .format(it.toJavaInstant().atZone(ZoneId.systemDefault()))
+        } ?: "",
+        onValueChange = {},
+        enabled = !state.loading,
+        readOnly = true,
+        label = { Text("Data urodzenia") },
+        isError = state.birthDateError != null,
+        supportingText = state.birthDateError?.let { { Text(it) } },
+        trailingIcon = {
+            IconButton(onClick = viewModel::showBirthDateModal) {
+                Icon(Icons.Default.DateRange, contentDescription = "Pick Date")
+            }
+        },
+        shape = RoundedCornerShape(15.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequester)
+            .onFocusChanged {
+                if (it.isFocused && !state.showBirthDateModal) {
+                    viewModel.showBirthDateModal()
+                }
+            }
+
+    )
+    if (state.showBirthDateModal) {
+        DatePickerDialog(
+            onDismissRequest = {
+                focusManager.clearFocus()
+                viewModel.hideBirthDateModal()
             },
-        )
+            confirmButton = {
+                TextButton(onClick = {
+                    focusManager.clearFocus()
+                    viewModel.handleBirthDateChange(
+                        Instant.fromEpochMilliseconds(
+                            datePickerState.selectedDateMillis ?: 0L
+                        )
+                    )
+                }) {
+                    Text("Potwierdź")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+    ExposedDropdownMenuBox(
+        expanded = state.showSexDropdown,
+        onExpandedChange = viewModel::changeShowSexDropdown,
+    ) {
         OutlinedTextField(
-            label = { Text("Powtórz hasło") },
-            value = state.passwordRepeat,
-            onValueChange = viewModel::handlePasswordRepeatChange,
-            enabled = !state.loading,
-            isError = state.passwordRepeatError != null,
-            supportingText = state.passwordRepeatError?.let { { Text(it) } },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp),
-            visualTransformation = {
-                TransformedText(
-                    AnnotatedString("*".repeat(it.text.length)), OffsetMapping.Identity
-                )
-            },
-        )
-        OutlinedTextField(
-            label = { Text("Imie") },
-            value = state.firstName,
-            onValueChange = viewModel::handleFirstNameChange,
-            enabled = !state.loading,
-            isError = state.firstNameError != null,
-            supportingText = state.firstNameError?.let { { Text(it) } },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp),
-        )
-        OutlinedTextField(
-            label = { Text("Nazwisko") },
-            value = state.lastName,
-            onValueChange = viewModel::handleLastNameChange,
-            enabled = !state.loading,
-            isError = state.lastNameError != null,
-            supportingText = state.lastNameError?.let { { Text(it) } },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp),
-        )
-
-        OutlinedTextField(
-            label = { Text("PESEL") },
-            value = state.pesel,
-            onValueChange = viewModel::onPeselChanged,
-            enabled = !state.loading,
-            isError = state.peselError != null,
-            supportingText = state.peselError?.let { { Text(it) } },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp),
-        )
-
-
-
-        OutlinedTextField(
-            value = state.birthDate?.let {
-                DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                    .format(it.toJavaInstant().atZone(ZoneId.systemDefault()))
-            } ?: "",
+            value = state.sex?.let { SEX_LABELS[it] } ?: "",
             onValueChange = {},
             enabled = !state.loading,
             readOnly = true,
-            label = { Text("Data urodzenia") },
-            isError = state.birthDateError != null,
-            supportingText = state.birthDateError?.let { { Text(it) } },
-            trailingIcon = {
-                IconButton(onClick = viewModel::showBirthDateModal) {
-                    Icon(Icons.Default.DateRange, contentDescription = "Pick Date")
-                }
-            },
+            label = { Text("Płeć") },
+            isError = state.sexError != null,
+            supportingText = state.sexError?.let { { Text(it) } },
             shape = RoundedCornerShape(15.dp),
             modifier = Modifier
+                .menuAnchor()
                 .fillMaxWidth()
-                .focusRequester(focusRequester)
-                .onFocusChanged {
-                    if (it.isFocused && !state.showBirthDateModal) {
-                        viewModel.showBirthDateModal()
-                    }
-                }
-
         )
-        if (state.showBirthDateModal) {
-            DatePickerDialog(
-                onDismissRequest = {
-                    focusManager.clearFocus()
-                    viewModel.hideBirthDateModal()
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        focusManager.clearFocus()
-                        viewModel.handleBirthDateChange(
-                            Instant.fromEpochMilliseconds(
-                                datePickerState.selectedDateMillis ?: 0L
-                            )
-                        )
-                    }) {
-                        Text("Potwierdź")
-                    }
-                }
-            ) {
-                DatePicker(state = datePickerState)
-            }
-        }
-        ExposedDropdownMenuBox(
+
+        ExposedDropdownMenu(
             expanded = state.showSexDropdown,
-            onExpandedChange = viewModel::changeShowSexDropdown,
+            onDismissRequest = { viewModel.changeShowSexDropdown(false) }
         ) {
-            OutlinedTextField(
-                value = state.sex?.let { SEX_LABELS[it] } ?: "",
-                onValueChange = {},
-                enabled = !state.loading,
-                readOnly = true,
-                label = { Text("Płeć") },
-                isError = state.sexError != null,
-                supportingText = state.sexError?.let { { Text(it) } },
-                shape = RoundedCornerShape(15.dp),
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth()
-            )
-
-            ExposedDropdownMenu(
-                expanded = state.showSexDropdown,
-                onDismissRequest = { viewModel.changeShowSexDropdown(false) }
-            ) {
-                SEX_OPTIONS.forEach { sex ->
-                    DropdownMenuItem(
-                        text = { Text(SEX_LABELS[sex] ?: sex.name) },
-                        onClick = {
-                            viewModel.handleSexChange(sex)
-                            viewModel.changeShowSexDropdown(false)
-                        }
-                    )
-                }
+            SEX_OPTIONS.forEach { sex ->
+                DropdownMenuItem(
+                    text = { Text(SEX_LABELS[sex] ?: sex.name) },
+                    onClick = {
+                        viewModel.handleSexChange(sex)
+                        viewModel.changeShowSexDropdown(false)
+                    }
+                )
             }
         }
-        ExposedDropdownMenuBox(
+    }
+
+    Spacer(modifier = Modifier.padding(20.dp))
+    FilledTonalButton(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+        enabled = !state.loading,
+        onClick = viewModel::goToMeasurementsStep
+    ) {
+        Text("Dalej")
+    }
+    TextButton(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+        enabled = !state.loading,
+        onClick = viewModel::goBackToCredentialsStep
+    ) {
+        Text("Wróć")
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SignUpScreenMeasurementsStep(viewModel: SignUpScreenViewModel) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    ExposedDropdownMenuBox(
+        expanded = state.showDoctorDropdown,
+        onExpandedChange = viewModel::changeDoctorDropdown
+    ) {
+        OutlinedTextField(
+            value = state.doctor?.let { "${it.firstName} ${it.lastName}" } ?: "",
+            onValueChange = {},
+            enabled = !state.loading,
+            readOnly = true,
+            label = { Text("Doktor") },
+            isError = state.doctorError != null,
+            supportingText = state.doctorError?.let { { Text(it) } },
+            shape = RoundedCornerShape(15.dp),
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
+        )
+
+        ExposedDropdownMenu(
             expanded = state.showDoctorDropdown,
-            onExpandedChange = viewModel::changeDoctorDropdown
+            onDismissRequest = { viewModel.changeDoctorDropdown(false) }
         ) {
-            OutlinedTextField(
-                value = state.doctor?.let { "${it.firstName} ${it.lastName}" } ?: "",
-                onValueChange = {},
-                enabled = !state.loading,
-                readOnly = true,
-                label = { Text("Doktor") },
-                isError = state.doctorError != null,
-                supportingText = state.doctorError?.let { { Text(it) } },
-                shape = RoundedCornerShape(15.dp),
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth()
-            )
-
-            ExposedDropdownMenu(
-                expanded = state.showDoctorDropdown,
-                onDismissRequest = { viewModel.changeDoctorDropdown(false) }
-            ) {
-                state.availableDoctors.forEach { doctor ->
-                    DropdownMenuItem(
-                        text = { Text("${doctor.firstName} ${doctor.lastName}") },
-                        onClick = {
-                            viewModel.handleDoctorChange(doctor)
-                            viewModel.changeDoctorDropdown(false)
-                        }
-                    )
-                }
+            state.availableDoctors.forEach { doctor ->
+                DropdownMenuItem(
+                    text = { Text("${doctor.firstName} ${doctor.lastName}") },
+                    onClick = {
+                        viewModel.handleDoctorChange(doctor)
+                        viewModel.changeDoctorDropdown(false)
+                    }
+                )
             }
         }
-        Spacer(modifier = Modifier.padding(20.dp))
-        FilledTonalButton(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp),
-            enabled = !state.loading,
-            onClick = viewModel::handleSignUp
-        ) {
-            Text("Zarejestruj się")
-        }
-        TextButton(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp),
-            enabled = !state.loading,
-            onClick = viewModel::handleSignIn
-        ) {
-            Text("Zaloguj się")
-        }
+    }
+
+    Spacer(modifier = Modifier.padding(20.dp))
+    FilledTonalButton(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+        enabled = !state.loading,
+        onClick = viewModel::handleSignUp
+    ) {
+        Text("Dalej")
+    }
+    TextButton(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+        enabled = !state.loading,
+        onClick = viewModel::goBackToPersonalInfoStep
+    ) {
+        Text("Wróć")
     }
 }
 

@@ -27,6 +27,44 @@ class SignUpScreenViewModel(
         loadAvailableDoctors()
     }
 
+    fun goToPersonalInfoStep() {
+        validateEmailField()
+        validatePasswordField()
+        validatePasswordRepeatField()
+        if (
+            state.value.emailError == null &&
+            state.value.passwordError == null &&
+            state.value.passwordRepeatError == null
+        ) {
+            state.update { it.copy(step = SignUpScreenStep.PERSONAL_INFO) }
+        }
+    }
+
+    fun goToMeasurementsStep() {
+        validateFirstNameField()
+        validateLastNameField()
+        validatePeselField()
+        validateBirthDateField()
+        validateSexField()
+        if (
+            state.value.firstNameError == null &&
+            state.value.lastNameError == null &&
+            state.value.peselError == null &&
+            state.value.birthDateError == null &&
+            state.value.sexError == null
+        ) {
+            state.update { it.copy(step = SignUpScreenStep.MEASUREMENTS) }
+        }
+    }
+
+    fun goBackToCredentialsStep() {
+        state.update { it.copy(step = SignUpScreenStep.CREDENTIALS) }
+    }
+
+    fun goBackToPersonalInfoStep() {
+        state.update { it.copy(step = SignUpScreenStep.PERSONAL_INFO) }
+    }
+
     fun handleEmailChange(email: String) {
         state.update { it.copy(email = email, emailError = null) }
     }
@@ -60,11 +98,6 @@ class SignUpScreenViewModel(
         state.update { it.copy(pesel = pesel, peselError = null) }
     }
 
-
-    fun showSexDropdown() {
-        state.update { it.copy(showSexDropdown = true) }
-    }
-
     fun changeShowSexDropdown(showSexDropdown: Boolean) {
         state.update { it.copy(showSexDropdown = showSexDropdown) }
     }
@@ -82,7 +115,7 @@ class SignUpScreenViewModel(
     }
 
     fun handleDoctorChange(doctor: User.Doctor) {
-       state.update { it.copy(doctor = doctor, doctorError = null) }
+        state.update { it.copy(doctor = doctor, doctorError = null) }
     }
 
     fun handleSignUp() {
@@ -137,7 +170,7 @@ class SignUpScreenViewModel(
         validateBirthDateField()
         validateSexField()
         validateDoctorField()
-        validatePESEL()
+        validatePeselField()
     }
 
     private fun validateEmailField() {
@@ -158,7 +191,7 @@ class SignUpScreenViewModel(
         }
     }
 
-    private fun validatePESEL(){
+    private fun validatePeselField() {
         if (state.value.pesel.length != 11 || !state.value.pesel.all { it.isDigit() }) {
             state.update { it.copy(peselError = "PESEL musi mieć dokładnie 11 cyfr") }
             return
