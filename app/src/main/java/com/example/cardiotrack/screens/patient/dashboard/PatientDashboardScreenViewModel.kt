@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toKotlinLocalDate
+import kotlinx.datetime.toLocalDateTime
 import java.time.LocalDate
 
 class PatientDashboardScreenViewModel(
@@ -78,14 +78,14 @@ class PatientDashboardScreenViewModel(
 
     fun isDayInReferenceRange(date: LocalDate): Boolean {
         val dayMeasurements = state.value.measurements.filter {
-            it.date.toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate() == date
+            it.data.date.toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate() == date
         }
 
         if (dayMeasurements.isEmpty()) return false
 
-        val avgSys = dayMeasurements.map { it.sys }.average()
-        val avgDia = dayMeasurements.map { it.dia }.average()
-        val avgBpm = dayMeasurements.map { it.bpm }.average()
+        val avgSys = dayMeasurements.map { it.data.sys }.average()
+        val avgDia = dayMeasurements.map { it.data.dia }.average()
+        val avgBpm = dayMeasurements.map { it.data.bpm }.average()
 
         return avgSys in 90.0..129.0 &&
                 avgDia in 60.0..84.0 &&

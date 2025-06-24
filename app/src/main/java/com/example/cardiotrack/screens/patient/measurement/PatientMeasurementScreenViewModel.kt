@@ -4,7 +4,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.cardiotrack.domain.Measurement
+import com.example.cardiotrack.domain.MeasurementData
 import com.example.cardiotrack.domain.User
 import com.example.cardiotrack.screens.patient.dashboard.PatientDashboardScreen
 import com.example.cardiotrack.services.patient.PatientService
@@ -69,7 +69,7 @@ class PatientMeasurementScreenViewModel(
             if (measurementData.date != null) {
                 patientService.addMeasurement(
                     user,
-                    Measurement(
+                    MeasurementData(
                         bpm = measurementData.bpm.toInt(),
                         sys = measurementData.sys.toInt(),
                         dia = measurementData.dia.toInt(),

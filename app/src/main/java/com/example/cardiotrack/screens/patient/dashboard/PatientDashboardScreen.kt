@@ -9,17 +9,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Card
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,9 +51,11 @@ import com.example.cardiotrack.services.patient.FirebasePatientService
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Serializable
 data class PatientDashboardScreen(val user: User.Patient)
@@ -62,6 +69,9 @@ fun PatientDashboardScreen(
 
     val daysInMonth = state.selectedMonth.lengthOfMonth()
     val firstDayOfWeek = (state.selectedMonth.atDay(1).dayOfWeek.value - 1)
+    val currentDayMeasurements = state.measurements
+        .filter { it.data.date.toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate() == state.selectedDate }
+        .sortedBy { it.data.date }
 
     Column(
         modifier = Modifier
@@ -119,7 +129,7 @@ fun PatientDashboardScreen(
                 val day = index + 1
                 val date = state.selectedMonth.atDay(day)
                 val measurementsForDay = state.measurements.filter {
-                    it.date.toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate() == date
+                    it.data.date.toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate() == date
                 }
                 val hasEvent = measurementsForDay.isNotEmpty()
                 val isSelected = date == state.selectedDate
@@ -152,7 +162,7 @@ fun PatientDashboardScreen(
                                 color = if (!isEnabled) MaterialTheme.colorScheme.surfaceDim
                                 else if (isSelected) MaterialTheme.colorScheme.onPrimary
                                 else Color.Unspecified,
-                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
                             )
                         }
                         if (hasEvent) {
@@ -162,19 +172,51 @@ fun PatientDashboardScreen(
                                     modifier = Modifier
                                         .size(6.dp)
                                         .background(
-                                            color = if (isInRange) Color(0xFF4CAF50) else Color(
-                                                0xFFF44336
-                                            ),
+                                            color = if (isInRange) Color(0xFF4CAF50) else Color(0xFFF44336),
                                             shape = CircleShape
                                         )
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = measurementsForDay.size.toString(),
+                                    modifier = Modifier.padding(4.dp),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = Color.Black
                                 )
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        LazyColumn(modifier = Modifier.weight(0.75f)) {
+            items(currentDayMeasurements, key = { it.id }) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            it.data.date
+                                .toLocalDateTime(TimeZone.currentSystemDefault())
+                                .toJavaLocalDateTime()
+                                .format(DateTimeFormatter.ofPattern("HH:mm")),
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text("SYS: ${it.data.sys} mmHg")
+                        Text("DIA: ${it.data.dia} mmHg")
+                        Text("HR: ${it.data.bpm} bpm")
+                        if (it.data.notes != null) {
+                            Text("Notatki:")
+                            Text(it.data.notes)
                         }
                     }
                 }
@@ -209,7 +251,7 @@ fun PatientDashboardScreenPreview() {
     val navController = rememberNavController()
     val routeData = PatientDashboardScreen(
         User.Patient(
-            id = "TEST",
+            id = "8hVttJkwXdQpFTZIFEwWso6pHv13",
             doctorId = "",
             firstName = "",
             lastName = "",

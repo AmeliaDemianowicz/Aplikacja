@@ -2,10 +2,9 @@ package com.example.cardiotrack.screens.patient.statistics
 
 import com.example.cardiotrack.domain.Measurement
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.toJavaInstant
+import kotlinx.datetime.toLocalDateTime
 import java.time.Instant
-import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
 
@@ -25,11 +24,11 @@ data class PatientStatisticsScreenState(
 
     fun daysInReferenceRange(): Int {
         return measurements
-            .groupBy { it.date.toLocalDateTime(TimeZone.currentSystemDefault()).date }
+            .groupBy { it.data.date.toLocalDateTime(TimeZone.currentSystemDefault()).date }
             .count { (_, dailyMeasurements) ->
-                val avgSys = dailyMeasurements.map { it.sys }.average()
-                val avgDia = dailyMeasurements.map { it.dia }.average()
-                val avgBpm = dailyMeasurements.map { it.bpm }.average()
+                val avgSys = dailyMeasurements.map { it.data.sys }.average()
+                val avgDia = dailyMeasurements.map { it.data.dia }.average()
+                val avgBpm = dailyMeasurements.map { it.data.bpm }.average()
                 avgSys in 90.0..129.0 &&
                         avgDia in 60.0..84.0 &&
                         avgBpm in 60.0..100.0
@@ -38,11 +37,11 @@ data class PatientStatisticsScreenState(
 
     fun daysNotInReferenceRange(): Int {
         return measurements
-            .groupBy { it.date.toLocalDateTime(TimeZone.currentSystemDefault()).date }
+            .groupBy { it.data.date.toLocalDateTime(TimeZone.currentSystemDefault()).date }
             .count { (_, dailyMeasurements) ->
-                val avgSys = dailyMeasurements.map { it.sys }.average()
-                val avgDia = dailyMeasurements.map { it.dia }.average()
-                val avgBpm = dailyMeasurements.map { it.bpm }.average()
+                val avgSys = dailyMeasurements.map { it.data.sys }.average()
+                val avgDia = dailyMeasurements.map { it.data.dia }.average()
+                val avgBpm = dailyMeasurements.map { it.data.bpm }.average()
                 avgSys !in 90.0..129.0 ||
                         avgDia !in 60.0..84.0 ||
                         avgBpm !in 60.0..100.0
@@ -50,16 +49,16 @@ data class PatientStatisticsScreenState(
     }
 
     private fun average(from: Instant): PatientAggregatedStatistics? {
-        val matching = measurements.filter { it.date.toJavaInstant().isAfter(from) }
+        val matching = measurements.filter { it.data.date.toJavaInstant().isAfter(from) }
 
         if (matching.isEmpty()) {
             return null
         }
 
         return PatientAggregatedStatistics(
-            bpm = matching.map { it.bpm }.average().roundToInt(),
-            sys = matching.map { it.sys }.average().roundToInt(),
-            dia = matching.map { it.dia }.average().roundToInt()
+            bpm = matching.map { it.data.bpm }.average().roundToInt(),
+            sys = matching.map { it.data.sys }.average().roundToInt(),
+            dia = matching.map { it.data.dia }.average().roundToInt()
         )
     }
 }
