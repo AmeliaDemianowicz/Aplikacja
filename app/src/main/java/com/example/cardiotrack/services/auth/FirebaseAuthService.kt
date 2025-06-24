@@ -49,6 +49,9 @@ class FirebaseAuthService : AuthService {
         sex: Sex,
         pesel: String
     ): User {
+        if (!isPeselAvailable(pesel)) {
+            throw AuthError.PeselAlreadyExists
+        }
         try {
             val result = Firebase.auth.createUserWithEmailAndPassword(email, password).await()
             val userId = result.user?.uid ?: throw AuthError.Unexpected
@@ -66,5 +69,13 @@ class FirebaseAuthService : AuthService {
 
     private suspend fun setUserById(userId: String, user: User) {
         users.document(userId).set(FirebaseUser.serialize(user)).await()
+    }
+
+    private suspend fun isPeselAvailable(pesel: String): Boolean {
+        return users
+            .whereEqualTo("type", FirebaseUserType.PATIENT)
+            .whereEqualTo("pesel", pesel)
+            .limit(1).get().await()
+            .isEmpty
     }
 }

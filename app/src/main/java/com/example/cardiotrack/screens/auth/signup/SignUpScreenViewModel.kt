@@ -329,7 +329,20 @@ class SignUpScreenViewModel(
     private fun handleError(error: Throwable) {
         state.update { it.copy(loading = false) }
         when (error) {
-            is AuthError.UserAlreadyExists -> state.update { it.copy(emailError = "Użytkownik z takim e-mailem już istnieje") }
+            is AuthError.UserAlreadyExists -> state.update {
+                it.copy(
+                    step = SignUpScreenStep.CREDENTIALS,
+                    emailError = "Użytkownik z takim e-mailem już istnieje"
+                )
+            }
+
+            is AuthError.PeselAlreadyExists -> state.update {
+                it.copy(
+                    step = SignUpScreenStep.PERSONAL_INFO,
+                    peselError = "Użytkownik z takim numerem PESEL już istnieje"
+                )
+            }
+
             else -> throw error
         }
     }

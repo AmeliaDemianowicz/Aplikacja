@@ -6,6 +6,7 @@ import kotlinx.datetime.Instant
 
 sealed class AuthError : Throwable() {
     data object UserAlreadyExists : AuthError()
+    data object PeselAlreadyExists : AuthError()
     data object UserNotFound : AuthError()
     data object Unexpected : AuthError()
 }
