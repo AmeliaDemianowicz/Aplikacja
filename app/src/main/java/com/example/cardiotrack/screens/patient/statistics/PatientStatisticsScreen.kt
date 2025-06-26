@@ -33,10 +33,20 @@ import com.example.cardiotrack.services.patient.FirebasePatientService
 import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
 
-
+/**
+ * Dane przekazywane do ekranu statystyk pacjenta.
+ *
+ * @property user Obiekt pacjenta, dla którego wyświetlane są statystyki.
+ */
 @Serializable
 data class PatientStatisticsScreen(val user: User.Patient)
-
+/**
+ * Composable wyświetlający ekran statystyk pacjenta.
+ * Pokazuje średnie wartości pomiarów z ostatnich 7 i 30 dni,
+ * liczbę pomiarów w normie i poza normą oraz zakresy referencyjne.
+ *
+ * @param viewModel ViewModel zarządzający stanem ekranu.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatientStatisticsScreen(viewModel: PatientStatisticsScreenViewModel) {
@@ -134,7 +144,9 @@ fun PatientStatisticsScreen(viewModel: PatientStatisticsScreenViewModel) {
     }
 }
 
-
+/**
+ * Podgląd composable [PatientStatisticsScreen] z przykładowymi danymi.
+ */
 @Preview
 @Composable
 fun PatientStatisticsScreenPreview() {

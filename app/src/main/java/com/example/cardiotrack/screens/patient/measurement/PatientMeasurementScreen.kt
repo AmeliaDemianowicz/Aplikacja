@@ -53,11 +53,22 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.Serializable
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-
+/**
+ * Dane przekazywane do ekranu pomiaru pacjenta.
+ *
+ * @property user Obiekt pacjenta, dla którego wykonywany jest pomiar.
+ * @property date Data pomiaru w formacie String.
+ */
 @Serializable
 data class PatientMeasurementScreen(val user: User.Patient, val date: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Komponent Compose reprezentujący ekran dodawania pomiaru pacjenta.
+ *
+ * @param routeData Dane wejściowe ekranu zawierające użytkownika i datę.
+ * @param viewModel ViewModel zarządzający logiką i stanem ekranu.
+ */
 @Composable
 fun PatientMeasurementScreen(
     routeData: PatientMeasurementScreen,
@@ -197,7 +208,9 @@ fun PatientMeasurementScreen(
     }
 }
 
-
+/**
+ * Podgląd ekranu PatientMeasurementScreen z przykładowymi danymi.
+ */
 @Preview
 @Composable
 fun PatientMeasurementScreenPreview() {

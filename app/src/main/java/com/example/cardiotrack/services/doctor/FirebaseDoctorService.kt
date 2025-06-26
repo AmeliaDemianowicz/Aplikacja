@@ -8,8 +8,22 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObjects
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
-
+/**
+ * Implementacja interfejsu [DoctorService] wykorzystująca Firebase Firestore.
+ * Umożliwia lekarzowi pobieranie listy przypisanych pacjentów z opcją filtrowania i paginacji.
+ */
 class FirebaseDoctorService : DoctorService {
+    /**
+     * Pobiera listę pacjentów przypisanych do danego lekarza, opcjonalnie filtrując po imieniu i nazwisku.
+     * Wyniki są ograniczane do określonego limitu i mogą być stronicowane przy użyciu kursora.
+     *
+     * @param doctor Obiekt lekarza, którego pacjenci mają zostać pobrani.
+     * @param fullName Tekst do filtrowania pacjentów według pełnego imienia i nazwiska.
+     * @param cursor Dokument z poprzedniego zapytania służący jako punkt startowy do kolejnej strony danych.
+     * @param limit Maksymalna liczba pacjentów do pobrania.
+     *
+     * @return [PatientsPage] zawierająca listę pacjentów, ostatni dokument (kursor) i informację czy są kolejne wyniki.
+     */
     override suspend fun getPatientsByName(
         doctor: User.Doctor,
         fullName: String,

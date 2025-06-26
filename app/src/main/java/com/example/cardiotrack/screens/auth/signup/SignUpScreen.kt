@@ -59,13 +59,24 @@ import kotlinx.serialization.Serializable
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-
+/**
+ * Opcje płci dostępne w formularzu rejestracji.
+ */
 val SEX_OPTIONS = listOf(Sex.MAN, Sex.WOMAN)
+/**
+ * Mapowanie wartości płci na etykiety widoczne dla użytkownika.
+ */
 val SEX_LABELS = mapOf(Sex.MAN to "Mężczyzna", Sex.WOMAN to "Kobieta")
-
+/**
+ * Obiekt reprezentujący ekran rejestracji.
+ */
 @Serializable
 data object SignUpScreen
-
+/**
+ * Główny ekran rejestracji użytkownika. Wyświetla logo oraz odpowiedni etap formularza rejestracji.
+ *
+ * @param viewModel ViewModel zarządzający stanem formularza rejestracji.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(viewModel: SignUpScreenViewModel) {
@@ -96,7 +107,11 @@ fun SignUpScreen(viewModel: SignUpScreenViewModel) {
 
     }
 }
-
+/**
+ * Komponent wyświetlający pierwszy krok rejestracji – dane logowania.
+ *
+ * @param viewModel ViewModel dostarczający dane oraz obsługę logiki UI.
+ */
 @Composable
 fun SignUpScreenCredentialsStep(viewModel: SignUpScreenViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -163,7 +178,13 @@ fun SignUpScreenCredentialsStep(viewModel: SignUpScreenViewModel) {
         Text("Zaloguj się")
     }
 }
-
+/**
+ * Komponent wyświetlający drugi krok rejestracji – informacje osobiste (imię, nazwisko, PESEL, płeć, data urodzenia).
+ *
+ * Obsługuje również wybór daty za pomocą dialogu i rozwijane menu wyboru płci.
+ *
+ * @param viewModel ViewModel zarządzający danymi użytkownika i kontrolą UI.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreenPersonalInfoStep(viewModel: SignUpScreenViewModel) {
@@ -309,7 +330,13 @@ fun SignUpScreenPersonalInfoStep(viewModel: SignUpScreenViewModel) {
     }
 }
 
-
+/**
+ * Komponent wyświetlający trzeci krok rejestracji – wybór lekarza prowadzącego, ilości powiadomień i godzin pomiarów.
+ *
+ * Umożliwia użytkownikowi wybór liczby codziennych pomiarów oraz ustawienie ich godzin za pomocą TimePickerDialog.
+ *
+ * @param viewModel ViewModel zarządzający stanem i akcjami w tym kroku rejestracji.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreenMeasurementsStep(viewModel: SignUpScreenViewModel) {

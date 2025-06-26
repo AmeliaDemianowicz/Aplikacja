@@ -46,10 +46,20 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-
+/**
+ * Obiekt reprezentujący ekran logowania w systemie routingu.
+ * Używany przy nawigacji jako identyfikator `SignInScreen`.
+ */
 @Serializable
 data object SignInScreen
-
+/**
+ * Główny ekran logowania użytkownika.
+ *
+ * Ekran zawiera pola do wprowadzenia adresu e-mail oraz hasła,
+ * a także przyciski do logowania i przejścia do rejestracji.
+ *
+ * @param viewModel ViewModel odpowiedzialny za obsługę logiki logowania.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignInScreen(viewModel: SignInScreenViewModel) {
@@ -143,6 +153,11 @@ fun SignInScreen(viewModel: SignInScreenViewModel) {
     }
 
 }
+/**
+ * Podgląd ekranu logowania w trybie podglądu Compose.
+ *
+ * Używany do wizualizacji UI w edytorze bez uruchamiania aplikacji.
+ */
 @Preview
 @Composable
 fun SignInScreenPreview() {

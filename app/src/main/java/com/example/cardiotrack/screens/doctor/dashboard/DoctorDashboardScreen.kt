@@ -49,9 +49,19 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.Period
-
+/**
+ * Dane trasy ekranu dashboardu lekarza.
+ *
+ * @property user Zalogowany lekarz.
+ */
 @Serializable
 data class DoctorDashboardScreen(val user: User.Doctor)
+/**
+ * Formatuje datę urodzenia wraz z godziną na czytelny format tekstowy.
+ *
+ * @param instant Data i czas w formacie [kotlinx.datetime.Instant].
+ * @return Sformatowany ciąg znaków w formacie "yyyy-MM-dd o HH:mm".
+ */
 fun formatBirthDateWithTime(instant: kotlinx.datetime.Instant): String {
     val javaInstant = java.time.Instant.ofEpochSecond(instant.epochSeconds)
     val localDateTime = java.time.LocalDateTime.ofInstant(javaInstant, java.time.ZoneId.systemDefault())
@@ -59,6 +69,12 @@ fun formatBirthDateWithTime(instant: kotlinx.datetime.Instant): String {
     val timeFormatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm")
     return "${localDateTime.format(dateFormatter)} o ${localDateTime.format(timeFormatter)}"
 }
+/**
+ * Oblicza wiek na podstawie daty urodzenia.
+ *
+ * @param instant Data urodzenia w formacie [kotlinx.datetime.Instant].
+ * @return Wiek w pełnych latach.
+ */
 fun calculateAge(instant: kotlinx.datetime.Instant): Int {
     val javaInstant = java.time.Instant.ofEpochSecond(instant.epochSeconds)
     val birthDate = java.time.LocalDateTime.ofInstant(javaInstant, java.time.ZoneId.systemDefault()).toLocalDate()
@@ -66,7 +82,12 @@ fun calculateAge(instant: kotlinx.datetime.Instant): Int {
     return java.time.Period.between(birthDate, today).years
 }
 
-
+/**
+ * Ekran dashboardu lekarza wyświetlający listę pacjentów oraz pole wyszukiwania.
+ *
+ * @param routeData Dane przekazane do ekranu, zawierające aktualnego lekarza.
+ * @param viewModel Model widoku zarządzający stanem i logiką.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DoctorDashboardScreen(
@@ -153,7 +174,9 @@ fun DoctorDashboardScreen(
     }
 }
 
-
+/**
+ * Podgląd ekranu dashboardu lekarza w trybie podglądu Compose.
+ */
 @Preview
 @Composable
 fun DoctorDashboardScreenPreview() {

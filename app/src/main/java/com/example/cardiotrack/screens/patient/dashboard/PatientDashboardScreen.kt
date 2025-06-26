@@ -1,6 +1,7 @@
 package com.example.cardiotrack.screens.patient.dashboard
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -42,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,6 +53,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.rememberNavController
+import com.example.cardiotrack.R
 import com.example.cardiotrack.domain.Sex
 import com.example.cardiotrack.domain.User
 import com.example.cardiotrack.services.patient.FirebasePatientService
@@ -62,9 +65,27 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
+/**
+ * Dane przekazywane do ekranu dashboardu pacjenta.
+ *
+ * @property user Obiekt pacjenta, którego dane są wyświetlane na ekranie.
+ */
 @Serializable
 data class PatientDashboardScreen(val user: User.Patient)
+/**
+ * Komponent wyświetlający dashboard pacjenta z widokiem kalendarza i listą pomiarów z wybranego dnia.
+ *
+ * Funkcjonalności:
+ * - Nawigacja po miesiącach (poprzedni/następny miesiąc).
+ * - Widok dni miesiąca z oznaczeniem dni zawierających pomiary.
+ * - Wyświetlanie szczegółów pomiarów dla wybranego dnia.
+ * - Usuwanie pomiarów przez gest przesunięcia (swipe).
+ * - Dodawanie nowego pomiaru.
+ * - Przejście do ekranu statystyk.
+ *
+ * @param routeData Dane ekranu zawierające pacjenta.
+ * @param viewModel ViewModel zarządzający stanem i logiką ekranu.
+ */
 
 @Composable
 fun PatientDashboardScreen(
@@ -89,6 +110,13 @@ fun PatientDashboardScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo aplikacji",
+                modifier = Modifier
+                    .size(40.dp) // mały rozmiar
+                    .padding(start = 4.dp)
+            )
             IconButton(onClick = viewModel::handleGoToPrevMonth) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Previous month")
             }
@@ -271,7 +299,11 @@ fun PatientDashboardScreen(
         }
     }
 }
-
+/**
+ * Podgląd composable `PatientDashboardScreen` w trybie podglądu Android Studio.
+ *
+ * Tworzy przykładowego użytkownika pacjenta i inicjalizuje ekran
+ */
 @Preview
 @Composable
 fun PatientDashboardScreenPreview() {

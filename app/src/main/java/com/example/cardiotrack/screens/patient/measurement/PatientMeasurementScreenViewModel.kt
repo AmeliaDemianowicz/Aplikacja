@@ -15,31 +15,61 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
-
+/**
+ * ViewModel zarządzający stanem ekranu dodawania pomiaru pacjenta.
+ *
+ * @property patientService Serwis odpowiedzialny za operacje na danych pacjenta.
+ * @property navController Kontroler nawigacji do zarządzania przejściami między ekranami.
+ */
 class PatientMeasurementScreenViewModel(
     private val patientService: PatientService,
     private val navController: NavController
 ) : ViewModel() {
+    /**
+     * Aktualny stan ekranu, przechowywany jako [MutableStateFlow].
+     */
     val state = MutableStateFlow(PatientMeasurementScreenState())
-
+    /**
+     * Obsługuje zmianę wartości pulsu (BPM).
+     * Akceptuje tylko cyfry, ustawia wartość i czyści błąd.
+     *
+     * @param bpm Nowa wartość pulsu jako tekst.
+     */
     fun handleBpmChange(bpm: String) {
         if (bpm.isDigitsOnly()) {
             state.update { it.copy(bpm = bpm, bpmError = null) }
         }
     }
-
+    /**
+     * Obsługuje zmianę wartości ciśnienia skurczowego (SYS).
+     * Akceptuje tylko cyfry, ustawia wartość i czyści błąd.
+     *
+     * @param sys Nowa wartość ciśnienia skurczowego jako tekst.
+     */
     fun handleSysChange(sys: String) {
         if (sys.isDigitsOnly()) {
             state.update { it.copy(sys = sys, sysError = null) }
         }
     }
-
+    /**
+     * Obsługuje zmianę wartości ciśnienia rozkurczowego (DIA).
+     * Akceptuje tylko cyfry, ustawia wartość i czyści błąd.
+     *
+     * @param dia Nowa wartość ciśnienia rozkurczowego jako tekst.
+     */
     fun handleDiaChange(dia: String) {
         if (dia.isDigitsOnly()) {
             state.update { it.copy(dia = dia, diaError = null) }
         }
     }
-
+    /**
+     * Obsługuje zmianę wybranego czasu pomiaru.
+     * Ustawia datę i czas na podstawie przekazanych wartości.
+     *
+     * @param date Data pomiaru.
+     * @param hour Godzina pomiaru.
+     * @param minute Minuta pomiaru.
+     */
     fun handleTimeChange(date: LocalDate, hour: Int, minute: Int) {
         state.update {
             it.copy(
@@ -49,19 +79,32 @@ class PatientMeasurementScreenViewModel(
         }
         hideTimeModal()
     }
-
+    /**
+     * Pokazuje modal do wyboru czasu.
+     */
     fun showTimeModal() {
         state.update { it.copy(showTimeModal = true) }
     }
-
+    /**
+     * Ukrywa modal do wyboru czasu.
+     */
     fun hideTimeModal() {
         state.update { it.copy(showTimeModal = false) }
     }
-
+    /**
+     * Obsługuje zmianę dodatkowych notatek do pomiaru.
+     *
+     * @param notes Nowa wartość notatek.
+     */
     fun handleNotesChange(notes: String) {
         state.update { it.copy(notes = notes) }
     }
-
+    /**
+     * Dodaje nowy pomiar dla pacjenta, jeśli dane są poprawne.
+     * Po dodaniu przekierowuje na ekran dashboardu pacjenta.
+     *
+     * @param user Obiekt pacjenta, dla którego dodajemy pomiar.
+     */
     fun addMeasurement(user: User.Patient) {
         viewModelScope.launch {
             validateForm()
@@ -81,14 +124,18 @@ class PatientMeasurementScreenViewModel(
             }
         }
     }
-
+    /**
+     * Waliduje wszystkie pola formularza pomiaru.
+     */
     private fun validateForm() {
         validateBpmField()
         validateSysField()
         validateDiaField()
         validateDateField()
     }
-
+    /**
+     * Waliduje pole wartości pulsu.
+     */
     private fun validateBpmField() {
         if (state.value.bpm.isBlank()) {
             return state.update { it.copy(bpmError = "Puls nie może być pusty") }
@@ -97,7 +144,9 @@ class PatientMeasurementScreenViewModel(
             return state.update { it.copy(bpmError = "Nieprawidłowy puls") }
         }
     }
-
+    /**
+     * Waliduje pole wartości ciśnienia skurczowego.
+     */
     private fun validateSysField() {
         if (state.value.sys.isBlank()) {
             return state.update { it.copy(sysError = "Ciśnienie nie może być puste") }
@@ -106,7 +155,9 @@ class PatientMeasurementScreenViewModel(
             return state.update { it.copy(sysError = "Nieprawidłowe ciśnienie") }
         }
     }
-
+    /**
+     * Waliduje pole wartości ciśnienia rozkurczowego.
+     */
     private fun validateDiaField() {
         if (state.value.dia.isBlank()) {
             return state.update { it.copy(diaError = "Ciśnienie nie może być puste") }
@@ -115,7 +166,9 @@ class PatientMeasurementScreenViewModel(
             return state.update { it.copy(diaError = "Nieprawidłowe ciśnienie") }
         }
     }
-
+    /**
+     * Waliduje pole daty pomiaru.
+     */
     private fun validateDateField() {
         if (state.value.date == null) {
             return state.update { it.copy(dateError = "Data nie może być pusta") }

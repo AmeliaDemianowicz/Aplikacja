@@ -35,7 +35,12 @@ import kotlinx.serialization.json.Json
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
-
+/**
+ * Główna funkcja Composable aplikacji CardioTrack.
+ *
+ * Inicjalizuje motyw, nawigację oraz wymagane serwisy.
+ * Definiuje wszystkie ekrany w aplikacji oraz ich powiązania z ViewModelami.
+ */
 @Composable
 fun CardioTrackApp() {
     CardioTrackTheme {
@@ -121,18 +126,32 @@ fun CardioTrackApp() {
     }
 }
 
-
+/**
+ * Pomocnicza funkcja tworząca mapowanie typów na niestandardowe NavType,
+ * które potrafią serializować i deserializować obiekty JSON do parametrów nawigacji.
+ *
+ * @return Para KType oraz NavType dla typu [T]
+ */
 inline fun <reified T> jsonTypeMap(): Pair<KType, NavType<T>> {
     return typeOf<T>() to (object : NavType<T>(isNullableAllowed = false) {
+        /**
+         * Odczytuje i deserializuje wartość z Bundle.
+         */
         override fun get(bundle: Bundle, key: String): T? =
             bundle.getString(key)?.let { parseValue(it) }
-
+        /**
+         * Serializuje i zapisuje wartość do SavedState.
+         */
         override fun put(bundle: SavedState, key: String, value: T) {
             bundle.putString(key, serializeAsValue(value))
         }
-
+        /**
+         * Parsuje JSON do obiektu typu [T].
+         */
         override fun parseValue(value: String): T = Json.decodeFromString<T>(value)
-
+        /**
+         * Serializuje obiekt typu [T] do JSON.
+         */
         override fun serializeAsValue(value: T): String = Json.encodeToString(value)
     })
 }

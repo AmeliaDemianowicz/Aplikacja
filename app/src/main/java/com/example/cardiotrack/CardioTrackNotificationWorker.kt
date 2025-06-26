@@ -12,10 +12,23 @@ import androidx.work.WorkerParameters
 import java.time.Duration
 import java.time.LocalDateTime
 
-
+/**
+ * Worker odpowiedzialny za wyświetlanie powiadomień o konieczności dodania nowego pomiaru.
+ *
+ * Korzysta z Android WorkManager do wykonywania zadań w tle.
+ *
+ * @param context Kontekst aplikacji.
+ * @param params Parametry pracy Workera.
+ */
 class CardioTrackNotificationWorker(context: Context, params: WorkerParameters) :
     Worker(context, params) {
-
+    /**
+     * Wykonuje zadanie Workera - tworzy i wyświetla powiadomienie.
+     *
+     * Wymaga uprawnienia [Manifest.permission.POST_NOTIFICATIONS].
+     *
+     * @return Result.success() w przypadku pomyślnego wykonania.
+     */
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun doWork(): Result {
         val notificationManager = NotificationManagerCompat.from(applicationContext)
@@ -41,6 +54,15 @@ class CardioTrackNotificationWorker(context: Context, params: WorkerParameters) 
     }
 
     companion object {
+        /**
+         * Oblicza opóźnienie (w ms) do najbliższego wystąpienia podanej godziny i minuty.
+         *
+         * Jeśli czas podany jest już za nami, liczy do tej godziny następnego dnia.
+         *
+         * @param hour Godzina (0-23)
+         * @param minute Minuta (0-59)
+         * @return Opóźnienie w milisekundach od teraz
+         */
         fun initialDelay(hour: Int, minute: Int): Long {
             val now = LocalDateTime.now()
             val nextTime = now.withHour(hour).withMinute(minute).withSecond(0).withNano(0)
